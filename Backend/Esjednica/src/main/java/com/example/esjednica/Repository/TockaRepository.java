@@ -4,7 +4,10 @@ import com.example.esjednica.Model.Tocka;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface TockaRepository extends JpaRepository<Tocka, Long> {
-    List<Tocka> findBySjednicaId(Long sjednicaId); // Pronalazi sve točke za određenu sjednicu
+    List<Tocka> findBySjednicaId(Long sjednicaId);
+    Optional<Tocka> findById(Long id);
+
 }

@@ -13,7 +13,7 @@ const Navbar = observer(() => {
 
   const handleLogout = () => {
     userStore.logout();
-    navigate('/login');
+    navigate('/');
   };
 
   return (

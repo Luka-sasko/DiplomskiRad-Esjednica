@@ -7,6 +7,7 @@ const TockaForm = observer(({ tocka, sjednicaId, onSuccess }) => {
     naziv: '',
     opis: ''
   });
+  
 
   useEffect(() => {
     if (tocka) {

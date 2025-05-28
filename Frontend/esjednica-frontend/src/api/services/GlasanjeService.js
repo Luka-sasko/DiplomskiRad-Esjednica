@@ -1,7 +1,9 @@
 import { get, post } from '../base_api';
-const BASE = '/glasanje';
+const BASE = '/glasanja';
 
 export const GlasanjeService = {
-  glasaj: (data) => post(`${BASE}/glasaj`, data),
-  getResults: (tockaId) => get(`${BASE}/rezultati/${tockaId}`)
+  glasaj: (tockaId, data) => post(`${BASE}/tocka/${tockaId}`, data),
+  getResults: (tockaId) => get(`${BASE}/tocka/${tockaId}`),
+  start: (tockaId, trajanje) => post(`/tocke/${tockaId}/start-glasanje?trajanje=${trajanje}`),
+  status: (tockaId) => get(`/tocke/${tockaId}/status-glasanje`)
 };

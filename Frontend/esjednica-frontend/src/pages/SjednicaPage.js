@@ -14,6 +14,8 @@ const SjednicaPage = observer(() => {
   const [sortAsc, setSortAsc] = useState(true);
   const [currentPage, setCurrentPage] = useState(0);
   const [itemsPerPage, setItemsPerPage] = useState(5);
+  const user = JSON.parse(localStorage.getItem('user'));
+  const isAdmin = user?.roles?.includes('ROLE_ADMIN');
 
   useEffect(() => {
     sjednicaStore.fetchAll();
@@ -75,7 +77,9 @@ const SjednicaPage = observer(() => {
           <option value={10}>10</option>
           <option value={20}>20</option>
         </select>
+        {isAdmin && (
         <button className="add-button" onClick={() => setIsAddModalOpen(true)}>➕ Dodaj sjednicu</button>
+        )}
       </div>
 
       <SjednicaTable

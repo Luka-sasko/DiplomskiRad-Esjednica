@@ -15,6 +15,8 @@ const SjednicaForm = ({ onSuccess, sjednica }) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
+
+
   const validate = () => {
     const err = {};
     if (!form.naziv.trim()) err.naziv = 'Naziv je obavezan';

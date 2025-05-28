@@ -58,4 +58,18 @@ public class TockaController {
         return ResponseEntity.noContent().build();
     }
 
+    @PostMapping("/{id}/start-glasanje")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<?> startGlasanje(@PathVariable Long id, @RequestParam int trajanje) {
+        tockaService.startGlasanje(id, trajanje);
+        return ResponseEntity.ok("Glasanje pokrenuto");
+    }
+
+    @GetMapping("/{id}/status-glasanje")
+    public ResponseEntity<Boolean> isGlasanjeAktivno(@PathVariable Long id) {
+        return ResponseEntity.ok(tockaService.isGlasanjeAktivno(id));
+    }
+
+
+
 }

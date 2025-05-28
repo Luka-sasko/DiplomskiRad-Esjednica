@@ -5,6 +5,7 @@ import com.example.esjednica.Repository.TockaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -29,5 +30,23 @@ public class TockaService {
         tockaRepository.deleteById(id);
     }
 
+    public void startGlasanje(Long tockaId, int trajanjeSekundi) {
+        Tocka tocka = tockaRepository.findById(tockaId)
+                .orElseThrow(() -> new RuntimeException("Točka ne postoji"));
 
+        tocka.setGlasanjeStart(LocalDateTime.now());
+        tocka.setGlasanjeTrajanje(trajanjeSekundi);
+        tockaRepository.save(tocka);
+    }
+
+    public boolean isGlasanjeAktivno(Long tockaId) {
+        Tocka tocka = tockaRepository.findById(tockaId)
+                .orElseThrow(() -> new RuntimeException("Točka ne postoji"));
+
+        if (tocka.getGlasanjeStart() == null || tocka.getGlasanjeTrajanje() == null)
+            return false;
+
+        LocalDateTime kraj = tocka.getGlasanjeStart().plusSeconds(tocka.getGlasanjeTrajanje());
+        return LocalDateTime.now().isBefore(kraj);
+    }
 }

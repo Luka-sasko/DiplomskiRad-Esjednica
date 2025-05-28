@@ -1,6 +1,8 @@
 package com.example.esjednica.Model;
 
 import jakarta.persistence.*;
+
+import java.time.LocalDateTime;
 import java.util.List;
 
 
@@ -21,6 +23,27 @@ public class Tocka {
 
     @Column(columnDefinition = "TEXT")
     private String opis;
+    @Column(name = "glasanje_start")
+    private LocalDateTime glasanjeStart;
+
+    @Column(name = "glasanje_trajanje")
+    private Integer glasanjeTrajanje;
+
+    public LocalDateTime getGlasanjeStart() {
+        return glasanjeStart;
+    }
+
+    public void setGlasanjeStart(LocalDateTime glasanjeStart) {
+        this.glasanjeStart = glasanjeStart;
+    }
+
+    public Integer getGlasanjeTrajanje() {
+        return glasanjeTrajanje;
+    }
+
+    public void setGlasanjeTrajanje(Integer glasanjeTrajanje) {
+        this.glasanjeTrajanje = glasanjeTrajanje;
+    }
 
 
     public Long getId() {

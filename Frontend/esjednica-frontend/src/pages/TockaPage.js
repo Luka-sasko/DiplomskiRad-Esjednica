@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { tockaStore } from '../stores/TockaStore';
 import TockaForm from '../components/Tocka/TockaForm';
+import GlasanjeBox from '../components/Glasanje/GlasanjeBox';
 import '../styles/SjednicaPage.css';
 import { observer } from 'mobx-react-lite';
 import PrilogTable from '../components/Prilog/PrilogTable';
@@ -11,6 +12,8 @@ const TockaPage = observer(() => {
     const navigate = useNavigate();
     const [tocka, setTocka] = useState(null);
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+    const user = JSON.parse(localStorage.getItem('user'));
+    const isAdmin = user?.roles?.includes('ROLE_ADMIN');
 
     useEffect(() => {
         const fetch = async () => {
@@ -33,8 +36,9 @@ const TockaPage = observer(() => {
             <div className="sjednice-container">
                 <div className="sjednice-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <h2>Detalji točke</h2>
-                    <button className="add-button" onClick={() => setIsEditModalOpen(true)} style={{ marginLeft: '10px' }}> ✏️ Uredi točku</button>
-
+                    {isAdmin && (
+                        <button className="add-button" onClick={() => setIsEditModalOpen(true)} style={{ marginLeft: '10px' }}> ✏️ Uredi točku</button>
+                    )}
                 </div>
 
                 {isEditModalOpen && (
@@ -56,6 +60,7 @@ const TockaPage = observer(() => {
                 <p><strong>Naziv:</strong> {tocka.naziv}</p>
                 <p><strong>Opis:</strong> {tocka.opis}</p>
 
+                <GlasanjeBox tocka={tocka} />
                 <PrilogTable tockaId={id} />
 
             </div>

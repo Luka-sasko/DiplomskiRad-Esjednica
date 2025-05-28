@@ -5,6 +5,8 @@ import { prilogStore } from '../../stores/PrilogStore';
 const PrilogTable = observer(({ tockaId }) => {
     const [showForm, setShowForm] = useState(false);
     const [fileName, setFileName] = useState('');
+    const user = JSON.parse(localStorage.getItem('user'));
+    const isAdmin = user?.roles?.includes('ROLE_ADMIN');
 
 
     useEffect(() => {
@@ -33,9 +35,11 @@ const PrilogTable = observer(({ tockaId }) => {
         <div style={{ marginTop: '30px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <h2>Prilozi</h2>
+                {isAdmin && (
                 <button type="button" className="add-button" onClick={() => { setShowForm(!showForm); setFileName(''); }}>
                     {showForm ? '✖ Zatvori formu' : '📎 Dodaj novi prilog'}
                 </button>
+                )}
             </div>
 
             {showForm && (
@@ -83,6 +87,7 @@ const PrilogTable = observer(({ tockaId }) => {
                                     <button className="btn-table edit" onClick={() => prilogStore.download(prilog.id)}>
                                         ⬇️ Preuzmi
                                     </button>
+                                    {isAdmin && (
                                     <button
                                         className="btn-table delete"
                                         style={{ marginLeft: '10px' }}
@@ -94,6 +99,7 @@ const PrilogTable = observer(({ tockaId }) => {
                                     >
                                         🗑 Obriši
                                     </button>
+                                    )}
                                 </td>
                             </tr>
                         ))}

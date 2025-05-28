@@ -1,12 +1,22 @@
-/* KONTEJNER */
+/* KONTEJNER I NASLOV */
 .sjednice-container {
-  max-width: 1000px;
+  max-width: 60%;
   margin: 40px auto;
+  margin-top: 0px;
   padding: 20px;
   font-family: 'Segoe UI', sans-serif;
 }
 
-/* NASLOV */
+
+.tocke-container {
+  max-width: 65%;
+  margin: 5% auto;
+  padding: 20px;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+
+
 .sjednice-container h2 {
   font-size: 28px;
   color: #007bff;
@@ -14,7 +24,7 @@
   text-align: left;
 }
 
-/* SEARCH + DODAJ */
+/* KONTROLE (search, select, button) */
 .sjednice-controls {
   display: flex;
   justify-content: space-between;
@@ -24,35 +34,31 @@
   flex-wrap: wrap;
 }
 
-.sjednice-controls input {
-  flex: 1;
-  min-width: 280px;
+.sjednice-controls input,
+.sjednice-controls select {
   padding: 10px 14px;
   font-size: 15px;
   border: 1px solid #ccc;
   border-radius: 6px;
+  background-color: white;
+  min-width: 160px;
+  transition: border-color 0.3s;
 }
 
-.add-button {
-  background-color: #007bff;
-  color: white;
-  padding: 10px 16px;
-  font-size: 15px;
-  font-weight: bold;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  transition: background-color 0.3s;
-}
-
-.add-button:hover {
-  background-color: #095db7;
+.sjednice-controls select:focus {
+  outline: none;
+  border-color: #007bff;
+  box-shadow: 0 0 4px rgba(0, 123, 255, 0.3);
 }
 
 /* TABLICA */
 .sjednica-table-wrapper {
   overflow-x: auto;
   margin-top: 20px;
+}
+
+.tocke-sjednice-wrapper{
+  margin: 4%;
 }
 
 .sjednica-table {
@@ -63,8 +69,8 @@
   overflow: hidden;
 }
 
-.sjednica-table button{
-  margin: 5px;
+.sjednica-table button {
+  margin-right: 2%
 }
 
 .sjednica-table th,
@@ -96,26 +102,26 @@
   white-space: nowrap;
 }
 
-/* GUMBI U TABLICI */
-.filename-upload,
-.file-upload
-{
-  padding: 6px 12px;
-  margin-right: 6px;
+.sjednica-table th svg {
+  vertical-align: middle;
   font-size: 14px;
-  border: none;
-  border-radius: 4px;
-  color: white;
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  transition: background-color 0.2s ease;
+  color: #666;
 }
 
-.btn-table {
+.sjednica-table th:hover svg {
+  color: #000;
+}
+
+/* GUMBI I UPLOAD */
+.btn-table,
+.file-upload,
+.filename-upload,
+.add-button,
+.return-button,
+.download-button {
   padding: 6px 12px;
-  margin-right: 6px;
   font-size: 14px;
+  font-weight: bold;
   border: none;
   border-radius: 4px;
   cursor: pointer;
@@ -126,15 +132,21 @@
   transition: background-color 0.2s ease;
 }
 
+.btn-table.edit,
 .file-upload,
 .filename-upload,
-.btn-table.edit {
-  background-color: #0d6efd;
+.add-button,
+.return-button,
+.download-button {
+  background-color: #007bff;
 }
 
+.btn-table.edit:hover,
 .file-upload:hover,
-.btn-table.edit:hover {
-  background-color: #0a58ca;
+.add-button:hover,
+.return-button:hover,
+.download-button:hover {
+  background-color: #074281;
 }
 
 .btn-table.delete {
@@ -145,10 +157,15 @@
   background-color: #bb2d3b;
 }
 
+.return-button {
+  margin: 2%;
+}
+
 /* PAGINACIJA */
 .pagination-controls {
   display: flex;
   justify-content: center;
+  align-items: center;
   margin-top: 20px;
   gap: 8px;
   flex-wrap: wrap;
@@ -161,11 +178,16 @@
   background-color: white;
   cursor: pointer;
   border-radius: 4px;
-  transition: background-color 0.3s ease;
+  transition: background-color 0.3s, color 0.3s;
 }
 
-.pagination-controls button:hover {
+.pagination-controls button:hover:not(:disabled) {
   background-color: #e9ecef;
+}
+
+.pagination-controls button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 .pagination-controls .active {
@@ -181,7 +203,7 @@
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0,0,0,0.4);
+  background-color: rgba(0, 0, 0, 0.4);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -192,7 +214,7 @@
   background-color: white;
   padding: 30px;
   border-radius: 12px;
-  box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
   max-width: 500px;
   width: 100%;
   position: relative;
@@ -240,90 +262,28 @@
   background-color: #0056b3;
 }
 
-
-.sjednica-table th svg {
-  vertical-align: middle;
-  font-size: 14px;
-  color: #666;
-}
-.sjednica-table th:hover svg {
-  color: #000;
-}
-
-.pagination-controls {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin-top: 20px;
-  gap: 8px;
-  flex-wrap: wrap;
-}
-
-.pagination-controls button {
-  padding: 6px 12px;
-  font-size: 14px;
-  border: 1px solid #ccc;
-  background-color: white;
-  cursor: pointer;
-  border-radius: 4px;
-  transition: background-color 0.3s, color 0.3s;
-}
-
-.pagination-controls button:hover:not(:disabled) {
-  background-color: #e9ecef;
-}
-
-.pagination-controls .active {
-  background-color: #0d6efd;
+/* Stil za aktivnu opciju glasa */
+.btn-table.edit.active {
+  background-color: #032e6d !important;
   color: white;
-  border-color: #0d6efd;
+  font-weight: bold;
+  border: 2px solid #074281;
+  box-shadow: 0 0 6px rgba(0, 0, 0, 0.2);
 }
 
-.pagination-controls button:disabled {
-  opacity: 0.5;
+/* Stil za onemogućene tipke */
+.btn-table.edit:disabled {
+  opacity: 0.6;
   cursor: not-allowed;
 }
 
-
-.sjednice-controls select {
-  padding: 10px 14px;
-  font-size: 15px;
-  border: 1px solid #ccc;
-  border-radius: 6px;
-  background-color: white;
-  cursor: pointer;
-  min-width: 160px;
-  transition: border-color 0.3s;
+/* Modal sadržaj za glasanje */
+.modal-content h3 {
+  margin-bottom: 10px;
+  font-size: 20px;
 }
 
-.sjednice-controls select:focus {
-  outline: none;
-  border-color: #007bff;
-  box-shadow: 0 0 4px rgba(0, 123, 255, 0.3);
-}
-
-
-.download-button,
-.return-button,
-.add-button {
-  background-color: #007bff;
-  color: white;
-  padding: 10px 16px;
-  font-size: 15px;
-  font-weight: bold;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  transition: background-color 0.3s;
-}
-
-.download-button:hover,
-.return-button:hover,
-.add-button:hover {
-  background-color: #074281;
-}
-
-.return-button{
-  margin: 2%;
-
+.modal-content p {
+  font-size: 16px;
+  font-weight: 500;
 }

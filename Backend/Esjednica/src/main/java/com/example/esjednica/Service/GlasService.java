@@ -20,4 +20,6 @@ public class GlasService {
     public List<Glas> findByTockaId(Long tockaId) {
         return glasRepository.findByTockaId(tockaId);
     }
+
+
 }

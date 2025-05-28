@@ -11,7 +11,7 @@ public class Glas {
     private Long id;
 
     @Column(name = "korisnik_id")
-    private Integer korisnikId;
+    private Long korisnikId;
 
     @Column(name = "tocka_id")
     private Long tockaId;
@@ -22,8 +22,8 @@ public class Glas {
     // Getteri i setteri
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
-    public Integer getKorisnikId() { return korisnikId; }
-    public void setKorisnikId(Integer korisnikId) { this.korisnikId = korisnikId; }
+    public Long getKorisnikId() { return korisnikId; }
+    public void setKorisnikId(Long korisnikId) { this.korisnikId = korisnikId; }
     public Long getTockaId() { return tockaId; }
     public void setTockaId(Long tockaId) { this.tockaId = tockaId; }
     public String getGlas() { return glas; }

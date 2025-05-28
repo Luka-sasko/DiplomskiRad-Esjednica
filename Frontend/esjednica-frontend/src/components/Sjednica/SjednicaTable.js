@@ -17,7 +17,10 @@ const SjednicaTable = ({ sjednice, onEdit, onDelete, onSort, sortKey, sortAsc })
     return sortAsc ? <FaSortUp style={{ marginLeft: '6px' }} /> : <FaSortDown style={{ marginLeft: '6px' }} />;
   };
 
-  
+  const user = JSON.parse(localStorage.getItem('user'));
+  const isAdmin = user?.roles?.includes('ROLE_ADMIN');
+
+
   return (
     <div className="sjednica-table-wrapper">
       <table className="sjednica-table">
@@ -42,8 +45,12 @@ const SjednicaTable = ({ sjednice, onEdit, onDelete, onSort, sortKey, sortAsc })
               <td>{new Date(s.datumOdrzavanja).toLocaleString()}</td>
               <td>{s.lokacija}</td>
               <td onClick={(e) => e.stopPropagation()}>
-                <button type="button" className="btn-table edit" onClick={() => onEdit(s)}>Uredi</button>
-                <button type="button" className="btn-table delete" onClick={() => onDelete(s)}>Obriši</button>
+                {isAdmin && (
+                  <div>
+                    <button type="button" className="btn-table edit" onClick={() => onEdit(s)}>Uredi</button>
+                    <button type="button" className="btn-table delete" onClick={() => onDelete(s)}>Obriši</button>
+                  </div>
+                )}
               </td>
             </tr>
           ))}
