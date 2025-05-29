@@ -6,5 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 
 public interface GlasRepository extends JpaRepository<Glas, Long> {
-    List<Glas> findByTockaId(Long tockaId); // Pronalazi sve glasove za određenu točku
+    List<Glas> findByTockaId(Long tockaId);
+    boolean existsByTockaIdAndKorisnikId(Long tockaId, Long korisnikId);
+
 }

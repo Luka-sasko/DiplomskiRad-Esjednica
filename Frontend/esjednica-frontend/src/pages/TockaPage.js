@@ -6,6 +6,7 @@ import GlasanjeBox from '../components/Glasanje/GlasanjeBox';
 import '../styles/SjednicaPage.css';
 import { observer } from 'mobx-react-lite';
 import PrilogTable from '../components/Prilog/PrilogTable';
+import { glasanjeStore } from '../stores/GlasanjeStore';
 
 const TockaPage = observer(() => {
     const { id } = useParams();
@@ -60,8 +61,8 @@ const TockaPage = observer(() => {
                 <p><strong>Naziv:</strong> {tocka.naziv}</p>
                 <p><strong>Opis:</strong> {tocka.opis}</p>
 
-                <GlasanjeBox tocka={tocka} />
-                <PrilogTable tockaId={id} />
+                <GlasanjeBox tocka={tockaStore.tocka} aktivno={glasanjeStore.aktivno} />
+                <PrilogTable tockaId={tockaStore.tocka.id} />
 
             </div>
 

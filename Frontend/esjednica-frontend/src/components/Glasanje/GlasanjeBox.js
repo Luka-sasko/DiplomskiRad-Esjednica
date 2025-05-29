@@ -1,30 +1,42 @@
 import React, { useEffect, useState } from 'react';
 import { observer } from 'mobx-react-lite';
 import { glasanjeStore } from '../../stores/GlasanjeStore';
+import { tockaStore } from '../../stores/TockaStore';
 import { korisnikGlasanjeStore } from '../../stores/KorisnikGlasanjeStore';
 import GlasanjeModal from './GlasanjeModal';
+import RezultatiChart from './RezultatiChart';
+import useWebSocket from '../../api/useWebSocket';
+
 
 const GlasanjeBox = observer(({ tocka }) => {
     const [showModal, setShowModal] = useState(false);
-    const [glasanjeZavrseno, setGlasanjeZavrseno] = useState(false);
-    const [flagGlasanje, setFlagGlasanje] = useState(false);
-    const lokalnoGlasao = localStorage.getItem(`glasao_${tocka.id}`) === 'true';
-
     const user = JSON.parse(localStorage.getItem('user'));
     const isAdmin = user?.roles?.includes('ROLE_ADMIN');
 
+    useWebSocket((event) => {
+        if (event.aktivno && event.tockaId === tocka.id) {
+            glasanjeStore.getStatus(tocka.id);
+            tockaStore.getById(tocka.id);
+            korisnikGlasanjeStore.provjeriJeLiGlasao(tocka.id);
+        }
+    });
+
+
     useEffect(() => {
         const init = async () => {
-            await glasanjeStore.checkStatus(tocka.id);
+            await glasanjeStore.getStatus(tocka.id);
             await glasanjeStore.loadRezultati(tocka.id);
             await korisnikGlasanjeStore.provjeriJeLiGlasao(tocka.id);
 
             if (tocka.glasanjeStart && tocka.glasanjeTrajanje) {
-                korisnikGlasanjeStore.startCountdown(tocka.glasanjeStart, tocka.glasanjeTrajanje, async () => {
-                    setGlasanjeZavrseno(true);
-                    await glasanjeStore.checkStatus(tocka.id);
-                    await glasanjeStore.loadRezultati(tocka.id);
-                });
+                korisnikGlasanjeStore.startCountdown(
+                    tocka.glasanjeStart,
+                    tocka.glasanjeTrajanje,
+                    async () => {
+                        await glasanjeStore.getStatus(tocka.id);
+                        await glasanjeStore.loadRezultati(tocka.id);
+                    }
+                );
             }
         };
 
@@ -32,49 +44,64 @@ const GlasanjeBox = observer(({ tocka }) => {
         return () => korisnikGlasanjeStore.stopCountdown();
     }, [tocka.id]);
 
+    useEffect(() => {
+        const interval = setInterval(async () => {
+            await glasanjeStore.getStatus(tocka.id);
+            await glasanjeStore.loadRezultati(tocka.id);
+            if (glasanjeStore.aktivno && !korisnikGlasanjeStore.preostaloVrijeme) {
+                await tockaStore.getById(tocka.id);
+                korisnikGlasanjeStore.startCountdown(
+                    tockaStore.tocka.glasanjeStart,
+                    tockaStore.tocka.glasanjeTrajanje
+                );
+            }
+        }, glasanjeStore.aktivno ? 5000 : 15000);
+
+        return () => clearInterval(interval);
+    }, [tocka.id]);
+
+    const handlePokreniGlasanje = async () => {
+        const trajanje = prompt('Unesi trajanje glasanja u sekundama:');
+        if (trajanje) {
+            await glasanjeStore.start(tocka.id, parseInt(trajanje));
+            await glasanjeStore.getStatus(tocka.id);
+            await tockaStore.getById(tocka.id);
+            korisnikGlasanjeStore.startCountdown(
+                tockaStore.tocka.glasanjeStart,
+                tockaStore.tocka.glasanjeTrajanje
+            );
+            await glasanjeStore.loadRezultati(tocka.id);
+            await korisnikGlasanjeStore.provjeriJeLiGlasao(tocka.id);
+        }
+    };
+
     return (
         <div className="glasanje-box" style={{ margin: '30px 0' }}>
             <h2>Glasanje</h2>
 
-            {isAdmin && !flagGlasanje && (
-                <button
-                    className="add-button"
-                    onClick={async () => {
-                        const trajanje = prompt('Unesi trajanje glasanja u sekundama:');
-                        if (trajanje) {
-                            await glasanjeStore.start(tocka.id, parseInt(trajanje));
-                            window.location.reload();
-                            setFlagGlasanje(true);
-                        }
-                    }}
-                >
+            {isAdmin && !glasanjeStore.aktivno && (
+                <button className="add-button" onClick={handlePokreniGlasanje}>
                     🚦 Započni glasanje
                 </button>
             )}
 
-            {glasanjeStore.aktivno && (
+            {glasanjeStore.aktivno ? (
                 <>
-                    {korisnikGlasanjeStore.preostaloVrijeme !== null && (
-                        <p><strong>Preostalo vrijeme za glasanje:</strong> {korisnikGlasanjeStore.preostaloVrijeme} s</p>
-                    )}
-                    {!korisnikGlasanjeStore.jeGlasao && !lokalnoGlasao ? (
+                    <p><strong>Preostalo vrijeme za glasanje:</strong> {korisnikGlasanjeStore.preostaloVrijeme} s</p>
+                    {!korisnikGlasanjeStore.jeGlasao ? (
                         <button className="add-button" onClick={() => setShowModal(true)}>
                             🗳️ Glasaj
                         </button>
                     ) : (
                         <p><em>Glasanje evidentirano za ovaj račun.</em></p>
                     )}
-
-
-
                 </>
-            )}
-
-            {(glasanjeZavrseno || !glasanjeStore.aktivno) && (
+            ) : (
                 <div style={{ marginTop: '10px' }}>
                     <p><strong>ZA:</strong> {glasanjeStore.rezultati.ZA || 0}</p>
                     <p><strong>PROTIV:</strong> {glasanjeStore.rezultati.PROTIV || 0}</p>
                     <p><strong>SUZDRŽAN:</strong> {glasanjeStore.rezultati.SUZDRŽAN || 0}</p>
+                    <RezultatiChart />
                 </div>
             )}
 
@@ -83,27 +110,11 @@ const GlasanjeBox = observer(({ tocka }) => {
                     tockaId={tocka.id}
                     onClose={() => setShowModal(false)}
                     onGlasano={async () => {
-                        // Osvježi podatke o korisniku i glasanju
                         await korisnikGlasanjeStore.provjeriJeLiGlasao(tocka.id);
-
-                        // 🔁 Ponovno pokreni odbrojavanje jer korisnik je možda tek sada otvorio modal
-                        if (tocka.glasanjeStart && tocka.glasanjeTrajanje) {
-                            korisnikGlasanjeStore.startCountdown(
-                                tocka.glasanjeStart,
-                                tocka.glasanjeTrajanje,
-                                async () => {
-                                    setGlasanjeZavrseno(true);
-                                    await glasanjeStore.checkStatus(tocka.id);
-                                    await glasanjeStore.loadRezultati(tocka.id);
-                                }
-                            );
-                        }
-
+                        await glasanjeStore.loadRezultati(tocka.id);
                         setShowModal(false);
                     }}
                 />
-
-
             )}
         </div>
     );

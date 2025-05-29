@@ -3,8 +3,7 @@ import '../styles/HomePage.css';
 
 const HomePage = () => {
 
-    const user = JSON.parse(localStorage.getItem('user'));
-    const isAdmin = user?.roles?.includes('ROLE_ADMIN');
+    
 
     
     return (

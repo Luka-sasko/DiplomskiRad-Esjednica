@@ -13,6 +13,14 @@ const Navbar = observer(() => {
 
   const handleLogout = () => {
     userStore.logout();
+    localStorage.removeItem('user');
+    localStorage.removeItem('token'); 
+
+    Object.keys(localStorage).forEach((key) => {
+      if (key.startsWith('glasao_')) {
+        localStorage.removeItem(key);
+      }
+    });
     navigate('/');
   };
 

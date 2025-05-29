@@ -27,11 +27,17 @@ public class GlasanjeController {
     @PreAuthorize("hasAnyRole('ADMIN', 'KORISNIK', 'GLEDATELJ', 'PREDLAGATELJ')")
     public ResponseEntity<String> glasaj(@PathVariable Long tockaId, @RequestBody GlasDTO glasDTO, Authentication authentication) {
 
+        CustomPrincipal user = (CustomPrincipal) authentication.getPrincipal();
+
         if(!tockaService.isGlasanjeAktivno(tockaId)) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Glasanje nije aktivno za ovu točku.");
         }
+        if (glasService.hasUserAlreadyVoted(tockaId, user.getId())) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("Korisnik je već glasao.");
+        }
 
-        CustomPrincipal user = (CustomPrincipal) authentication.getPrincipal();
+
+
         Glas glas = new Glas();
         glas.setGlas((glasDTO.getGlas()));
         glas.setKorisnikId(user.getId());

@@ -21,5 +21,9 @@ public class GlasService {
         return glasRepository.findByTockaId(tockaId);
     }
 
+    public boolean hasUserAlreadyVoted(Long tockaId, Long korisnikId) {
+        return glasRepository.existsByTockaIdAndKorisnikId(tockaId, korisnikId);
+    }
+
 
 }

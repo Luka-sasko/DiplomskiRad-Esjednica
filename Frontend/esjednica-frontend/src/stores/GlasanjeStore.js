@@ -1,4 +1,4 @@
-import { makeAutoObservable } from 'mobx';
+import { makeAutoObservable, runInAction } from 'mobx';
 import { GlasanjeService } from '../api/services/GlasanjeService';
 
 class GlasanjeStore {
@@ -9,64 +9,59 @@ class GlasanjeStore {
     makeAutoObservable(this);
   }
 
-  async checkStatus(tockaId) {
+  async getStatus(tockaId) {
     try {
-      const res = await GlasanjeService.status(tockaId);
-      this.aktivno = res.data;
-    } catch (e) {
-      console.error("Greška kod provjere statusa:", e);
-    }
-  }
-
-  async start(tockaId, trajanje) {
-    try {
-      await GlasanjeService.start(tockaId, trajanje);
-      this.aktivno = true;
-    } catch (e) {
-      console.error("Greška kod pokretanja:", e);
-    }
-  }
-
-  async glasaj(tockaId, glas) {
-    try {
-      await GlasanjeService.glasaj(tockaId, { glas });
-    } catch (e) {
-      console.error("Greška kod glasanja:", e);
+      const response = await GlasanjeService.status(tockaId);
+      runInAction(() => {
+        this.aktivno = response.data.aktivno;
+      });
+    } catch (err) {
+      console.error('Greška kod dohvaćanja statusa glasanja:', err);
     }
   }
 
   async loadRezultati(tockaId) {
     try {
-      const res = await GlasanjeService.getResults(tockaId);
-      const grupirano = { ZA: 0, PROTIV: 0, SUZDRŽAN: 0 };
-      res.data.forEach(g => {
-        if (grupirano[g.glas]) grupirano[g.glas]++;
-        else grupirano[g.glas] = 1;
+      const response = await GlasanjeService.getResults(tockaId);
+      runInAction(() => {
+        this.rezultati = response.data;
       });
-      this.rezultati = grupirano;
-    } catch (e) {
-      console.error("Greška kod rezultata:", e);
+
+      const user = JSON.parse(localStorage.getItem('user'));
+      if (user) {
+        const jeGlasaoRes = await GlasanjeService.jeGlasao(tockaId, user.id);
+        runInAction(() => {
+          import('../stores/KorisnikGlasanjeStore').then(({ korisnikGlasanjeStore }) => {
+            korisnikGlasanjeStore.jeGlasao = jeGlasaoRes.data;
+          });
+        });
+      }
+
+    } catch (err) {
+      console.error('Greška kod dohvaćanja rezultata glasanja:', err);
     }
   }
 
-  async getGlasovi(tockaId) {
-  try {
-    const res = await GlasanjeService.getResults(tockaId);
-    const result = res.data
-    return result;
-  } catch (e) {
-    console.error("Greška kod getGlasovi:", e);
-    return [];
+
+  async start(tockaId, trajanje) {
+    try {
+      await GlasanjeService.start(tockaId, trajanje);
+    } catch (err) {
+      console.error('Greška kod pokretanja glasanja:', err);
+    }
   }
-}
 
+  async glasaj(tockaId, data) {
 
-
-
-setGlasanjaStatus(status)
-{
-  this.aktivno=status;
-}
+    if (!['ZA', 'PROTIV', 'SUZDRŽAN'].includes(data.glas)) {
+      throw new Error("Neispravan glas.");
+    }
+    try {
+      await GlasanjeService.glasaj(tockaId, data);
+    } catch (err) {
+      console.error('Greška kod glasanja:', err);
+    }
+  }
 
 }
 
