@@ -1,87 +1,74 @@
 import React, { useEffect, useState } from 'react';
-import { observer } from 'mobx-react-lite';
 import { glasanjeStore } from '../../stores/GlasanjeStore';
-import { tockaStore } from '../../stores/TockaStore';
-import { korisnikGlasanjeStore } from '../../stores/KorisnikGlasanjeStore';
+import { observer } from 'mobx-react-lite';
 
-const GlasanjeModal = observer(({ tockaId, onClose, onGlasano }) => {
-    const [selected, setSelected] = useState('');
-    const [disabled, setDisabled] = useState(false);
-    
+const GlasanjeModal = observer(({ tockaId, onClose }) => {
+  const [preostalo, setPreostalo] = useState(null);
+  const [izabraniGlas, setIzabraniGlas] = useState('');
 
-    useEffect(() => {
-        const init = async () => {
-            await korisnikGlasanjeStore.provjeriJeLiGlasao(tockaId);
-            if (korisnikGlasanjeStore.jeGlasao) {
-                setDisabled(true); 
-            }
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const start = new Date(glasanjeStore.start).getTime();
+      const end = start + glasanjeStore.trajanje * 1000;
+      const now = Date.now();
+      const remaining = Math.floor((end - now) / 1000);
 
-            const tocka = tockaStore.tocka;
-            if (tocka.glasanjeStart && tocka.glasanjeTrajanje) {
-                korisnikGlasanjeStore.startCountdown(tocka.glasanjeStart, tocka.glasanjeTrajanje, () => {
-                    setDisabled(true); 
-                    setTimeout(() => onClose(), 500);
-                });
-            }
-        };
+      if (remaining <= 0) {
+        setPreostalo(0);
+        clearInterval(interval);
+        onClose();
+      } else {
+        setPreostalo(remaining);
+      }
+    }, 1000);
 
-        init();
-        return () => korisnikGlasanjeStore.stopCountdown();
-    }, [tockaId, onClose]);
+    return () => clearInterval(interval);
+  }, [glasanjeStore.start, glasanjeStore.trajanje, onClose]);
 
-    const handleSubmit = async () => {
-        if (!disabled && selected) {
-            await glasanjeStore.glasaj(tockaId, selected);
-            await glasanjeStore.loadRezultati(tockaId);
-            await korisnikGlasanjeStore.provjeriJeLiGlasao(tockaId);
-            setDisabled(true); 
-            onGlasano?.(); 
-        }
-    };
+  const handleGlasaj = async () => {
+    if (!izabraniGlas) return;
 
-    const glasOptions = ['ZA', 'PROTIV', 'SUZDRŽAN'];
+    await glasanjeStore.glasaj(tockaId, { glas: izabraniGlas });
+    onClose();
+  };
+  return (
+    <div className="modal-overlay">
+      <div className="modal-content">
+        <h3>Glasanje</h3>
 
-    return (
-        <div className="modal-overlay">
-            <div className="modal-content">
-                <h3>Odaberi svoj glas</h3>
-
-                {korisnikGlasanjeStore.preostaloVrijeme !== null && (
-                    <p style={{ marginBottom: '10px' }}>
-                        Preostalo vrijeme: <strong>{korisnikGlasanjeStore.preostaloVrijeme} s</strong>
-                    </p>
-                )}
-
-
-
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', margin: '20px 0' }}>
-                    {glasOptions.map(option => (
-                        <button
-                            key={option}
-                            className={`btn-table edit ${selected === option ? 'active' : ''}`}
-                            onClick={() => !disabled && setSelected(option)}
-                            disabled={disabled || korisnikGlasanjeStore.jeGlasao}
-                            style={{
-                                backgroundColor: selected === option ? '#0a58ca' : '',
-                                opacity: disabled || korisnikGlasanjeStore.jeGlasao ? 0.6 : 1
-                            }}
-                        >
-                            {option === 'ZA' ? '✅' : option === 'PROTIV' ? '❌' : '🤔'} {option}
-                        </button>
-                    ))}
-                </div>
-
-                <div>
-                    {!disabled && !korisnikGlasanjeStore.jeGlasao && (
-                        <button className="add-button" onClick={handleSubmit} disabled={!selected}>
-                            Potvrdi glas
-                        </button>
-                    )}
-                    <button className="close-modal" onClick={onClose}>✖</button>
-                </div>
-            </div>
+        {preostalo !== null && (
+          <p className="modal-timer">Preostalo vrijeme: <strong>{preostalo}s</strong></p>
+        )}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', margin: '20px 0' }}>
+          <button
+            className={`btn-table edit ${izabraniGlas === 'ZA' ? 'active' : ''}`}
+            onClick={() => setIzabraniGlas('ZA')}
+          >
+            ZA
+          </button>
+          <button
+            className={`btn-table edit ${izabraniGlas === 'PROTIV' ? 'active' : ''}`}
+            onClick={() => setIzabraniGlas('PROTIV')}
+          >
+            PROTIV
+          </button>
+          <button
+            className={`btn-table edit ${izabraniGlas === 'SUZDRŽAN' ? 'active' : ''}`}
+            onClick={() => setIzabraniGlas('SUZDRŽAN')}
+          >
+            SUZDRŽAN
+          </button>
         </div>
-    );
+
+        <div>
+          <button className="add-button" style={{ marginTop: '20px' }} disabled={!izabraniGlas} onClick={handleGlasaj}>
+            Glasaj
+          </button>
+          <button className="close-modal" onClick={onClose}>✖</button>
+        </div>
+      </div>
+    </div>
+  );
 });
 
 export default GlasanjeModal;

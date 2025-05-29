@@ -3,6 +3,8 @@ package com.example.esjednica.Service;
 import com.example.esjednica.Model.*;
 import com.example.esjednica.Repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
@@ -17,23 +19,18 @@ public class SjednicaService {
     @Autowired
     private GlasRepository glasRepository;
 
-
     public Sjednica saveSjednica(Sjednica sjednica) {
         return sjednicaRepository.save(sjednica);
     }
-
     public List<Sjednica> getAllSjednice() {
         return sjednicaRepository.findAll();
     }
-
     public Optional<Sjednica> findById(Long id) {
         return sjednicaRepository.findById(id);
     }
-
     public void deleteById(Long id) {
         sjednicaRepository.deleteById(id);
     }
-
     public Map<String, Integer> getRezultati(Long tockaId) {
         List<Glas> glasovi = glasRepository.findByTockaId(tockaId);
         Map<String, Integer> rezultati = new HashMap<>();

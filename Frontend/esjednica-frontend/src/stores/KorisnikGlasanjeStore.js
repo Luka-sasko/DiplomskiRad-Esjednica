@@ -1,71 +1,41 @@
 import { makeAutoObservable, runInAction } from 'mobx';
-import { glasanjeStore } from './GlasanjeStore';
 
 class KorisnikGlasanjeStore {
-    korisnikId = null;
-    jeGlasao = false;
-    tipGlasa = null;
-    preostaloVrijeme = null;
-    interval = null;
+  preostaloVrijeme = 0;
+  timer = null;
 
-    constructor() {
-        makeAutoObservable(this);
-        const user = JSON.parse(localStorage.getItem('user'));
-        if (user) {
-            this.korisnikId = user.id;
-        }
-    }
+  constructor() {
+    makeAutoObservable(this);
+  }
 
-    async provjeriJeLiGlasao(tockaId) {
-        try {
-            const glasovi = await glasanjeStore.getGlasovi(tockaId);
-            const mojGlas = glasovi.find(g => g.korisnikId === this.korisnikId);
-            runInAction(() => {
-                this.jeGlasao = !!mojGlas;
-                this.tipGlasa = mojGlas?.glas || null;
-                if (this.jeGlasao) {
-                    localStorage.setItem(`glasao_${tockaId}`, 'true');
-                }
+  startCountdown(startTime, trajanjeSekundi, onEnd) {
+    const start = new Date(startTime).getTime();
+    const delay = 5000;
+    const end = start + delay + trajanjeSekundi * 1000;
 
-            });
-        } catch (err) {
-            console.error("Greška kod provjere glasa korisnika:", err);
-        }
-    }
+    this.stopCountdown(); 
 
-    reset() {
-        this.jeGlasao = false;
-        this.tipGlasa = null;
-    }
+    this.timer = setInterval(() => {
+      const now = new Date().getTime();
+      const remaining = Math.max(Math.floor((end - now) / 1000), 0);
 
-    startCountdown(glasanjeStart, glasanjeTrajanje, onFinish) {
-        const start = new Date(glasanjeStart);
-        const end = new Date(start.getTime() + glasanjeTrajanje * 1000);
+      runInAction(() => {
+        this.preostaloVrijeme = remaining;
+      });
 
+      if (remaining <= 0) {
         this.stopCountdown();
+        if (onEnd) onEnd();
+      }
+    }, 1000);
+  }
 
-        this.interval = setInterval(() => {
-            const now = new Date();
-            const diff = Math.max(0, Math.floor((end - now) / 1000));
-            runInAction(() => {
-                this.preostaloVrijeme = diff;
-            });
-            if (diff <= 0) {
-                this.stopCountdown();
-                onFinish?.();
-            }
-        }, 1000);
+  stopCountdown() {
+    if (this.timer) {
+      clearInterval(this.timer);
+      this.timer = null;
     }
-
-    stopCountdown() {
-        if (this.interval) {
-            clearInterval(this.interval);
-            this.interval = null;
-        }
-        runInAction(() => {
-            this.preostaloVrijeme = null;
-        });
-    }
+  }
 }
 
 export const korisnikGlasanjeStore = new KorisnikGlasanjeStore();

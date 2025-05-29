@@ -3,71 +3,39 @@ import { GlasanjeService } from '../api/services/GlasanjeService';
 
 class GlasanjeStore {
   aktivno = false;
-  rezultati = {};
+  trajanje = 0;
+  start = null;
+  rezultati = [];
+  jeGlasao = false;
 
   constructor() {
     makeAutoObservable(this);
   }
 
-  async checkStatus(tockaId) {
-    try {
-      const res = await GlasanjeService.status(tockaId);
-      this.aktivno = res.data;
-    } catch (e) {
-      console.error("Greška kod provjere statusa:", e);
-    }
+  async ucitajStatus(tockaId) {
+    const res = await GlasanjeService.getStatus(tockaId);
+    this.aktivno = res.data.aktivno;
+    this.trajanje = res.data.trajanje;
+    this.start = res.data.start;
   }
 
-  async start(tockaId, trajanje) {
-    try {
-      await GlasanjeService.start(tockaId, trajanje);
-      this.aktivno = true;
-    } catch (e) {
-      console.error("Greška kod pokretanja:", e);
-    }
-  }
-
-  async glasaj(tockaId, glas) {
-    try {
-      await GlasanjeService.glasaj(tockaId, { glas });
-    } catch (e) {
-      console.error("Greška kod glasanja:", e);
-    }
-  }
-
-  async loadRezultati(tockaId) {
-    try {
-      const res = await GlasanjeService.getResults(tockaId);
-      const grupirano = { ZA: 0, PROTIV: 0, SUZDRŽAN: 0 };
-      res.data.forEach(g => {
-        if (grupirano[g.glas]) grupirano[g.glas]++;
-        else grupirano[g.glas] = 1;
-      });
-      this.rezultati = grupirano;
-    } catch (e) {
-      console.error("Greška kod rezultata:", e);
-    }
-  }
-
-  async getGlasovi(tockaId) {
-  try {
+  async ucitajGlasove(tockaId) {
     const res = await GlasanjeService.getResults(tockaId);
-    const result = res.data
-    return result;
-  } catch (e) {
-    console.error("Greška kod getGlasovi:", e);
-    return [];
+    this.rezultati = res.data;
+    const user = JSON.parse(localStorage.getItem('user'));
+    this.jeGlasao = res.data.some(g => g.korisnikId === user.id);
   }
-}
+
+  async glasaj(tockaId, data) {
+    await GlasanjeService.glasaj(tockaId, data);
+    this.jeGlasao = true;
+    await this.ucitajGlasove(tockaId);
+  }
 
 
-
-
-setGlasanjaStatus(status)
-{
-  this.aktivno=status;
-}
-
+  async startGlasanje(tockaId, trajanje) {
+    await GlasanjeService.start(tockaId, trajanje);
+  }
 }
 
 export const glasanjeStore = new GlasanjeStore();

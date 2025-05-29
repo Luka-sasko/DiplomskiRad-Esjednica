@@ -47,6 +47,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/glasanja/**").authenticated()
                         .requestMatchers("/api/sjednice/**").authenticated()
                         .requestMatchers("/api/tocke/**").authenticated()
+                        .requestMatchers("/ws/**").permitAll()
                         .anyRequest().permitAll()
 
 
@@ -62,7 +63,7 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("http://localhost:3000"));
+        configuration.setAllowedOriginPatterns(List.of("http://localhost:3000"));
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("*"));
         configuration.setExposedHeaders(List.of("Content-Disposition"));
@@ -71,6 +72,7 @@ public class SecurityConfig {
         source.registerCorsConfiguration("/**", configuration);
         return source;
     }
+
 
     @Bean
     public PasswordEncoder passwordEncoder() {

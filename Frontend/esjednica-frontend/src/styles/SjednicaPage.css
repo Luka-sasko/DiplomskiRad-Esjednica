@@ -287,3 +287,20 @@
   font-size: 16px;
   font-weight: 500;
 }
+
+.glasanje-timer-box {
+  background-color: #f0f8ff;
+  border: 1px solid #007bff;
+  border-radius: 8px;
+  padding: 10px 16px;
+  margin-bottom: 20px;
+  display: inline-block;
+}
+
+.glasanje-timer-text {
+  color: #074281;
+  font-size: 16px;
+  font-weight: bold;
+  margin: 0;
+}
+

@@ -4,8 +4,12 @@ import com.example.esjednica.Model.Tocka;
 import com.example.esjednica.Service.TockaService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+
+
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+
 
 import java.util.List;
 
@@ -15,6 +19,9 @@ public class TockaController {
 
     @Autowired
     private TockaService tockaService;
+
+
+
 
     @GetMapping("/sjednica/{sjednicaId}")
     public ResponseEntity<List<Tocka>> getTockeZaSjednicu(@PathVariable Long sjednicaId) {
@@ -48,6 +55,7 @@ public class TockaController {
         return ResponseEntity.ok(tockaService.saveTocka(existing));
     }
 
+
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteTocka(@PathVariable Long id) {
         Tocka existing = tockaService.findById(id);
@@ -58,17 +66,7 @@ public class TockaController {
         return ResponseEntity.noContent().build();
     }
 
-    @PostMapping("/{id}/start-glasanje")
-    @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<?> startGlasanje(@PathVariable Long id, @RequestParam int trajanje) {
-        tockaService.startGlasanje(id, trajanje);
-        return ResponseEntity.ok("Glasanje pokrenuto");
-    }
 
-    @GetMapping("/{id}/status-glasanje")
-    public ResponseEntity<Boolean> isGlasanjeAktivno(@PathVariable Long id) {
-        return ResponseEntity.ok(tockaService.isGlasanjeAktivno(id));
-    }
 
 
 
