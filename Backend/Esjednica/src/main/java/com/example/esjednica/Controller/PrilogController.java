@@ -6,6 +6,7 @@ import com.example.esjednica.Repository.PrilogRepository;
 import com.example.esjednica.Service.PrilogService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.core.io.Resource;
@@ -45,7 +46,6 @@ public class PrilogController {
 
 
 
-
     @GetMapping("/download/{id}")
     public ResponseEntity<Resource> download(@PathVariable Long id) throws IOException {
         Prilog prilog = prilogRepository.findById(id)
@@ -74,7 +74,6 @@ public class PrilogController {
     }
 
 
-
     @DeleteMapping("/{id}")
     public ResponseEntity<?> obrisi(@PathVariable Long id) {
         try {
@@ -97,7 +96,6 @@ public class PrilogController {
 
         return ResponseEntity.ok(dtoLista);
     }
-
 
     @GetMapping("/{id}")
     public ResponseEntity<PrilogInfoDTO> getById(@PathVariable Long id) {

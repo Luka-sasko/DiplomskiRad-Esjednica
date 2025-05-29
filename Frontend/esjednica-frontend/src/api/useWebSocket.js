@@ -1,27 +1,30 @@
 import { useEffect } from 'react';
-import SockJS from 'sockjs-client';
 import { Client } from '@stomp/stompjs';
+import SockJS from 'sockjs-client';
 
-const useWebSocket = (onGlasanjeStart) => {
+const useWebSocket = (onEvent) => {
   useEffect(() => {
     const socket = new SockJS('http://localhost:8080/ws');
-    const client = new Client({
+
+    const stompClient = new Client({
       webSocketFactory: () => socket,
       reconnectDelay: 5000,
       onConnect: () => {
-        client.subscribe('/topic/glasanje', (message) => {
+        stompClient.subscribe('/topic/glasanje', (message) => {
           const data = JSON.parse(message.body);
-          onGlasanjeStart(data);
+          console.log('Primljeno preko WebSocketa:', data);
+          if (onEvent) onEvent(data); 
         });
       },
+      debug: () => {},
     });
 
-    client.activate();
+    stompClient.activate();
 
     return () => {
-      client.deactivate();
+      stompClient.deactivate();
     };
-  }, [onGlasanjeStart]);
+  }, [onEvent]);
 };
 
 export default useWebSocket;

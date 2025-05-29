@@ -3,10 +3,11 @@ package com.example.esjednica.Service;
 import com.example.esjednica.Model.Glas;
 import com.example.esjednica.Repository.GlasRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-
 @Service
 public class GlasService {
 

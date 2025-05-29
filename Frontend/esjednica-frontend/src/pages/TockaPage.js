@@ -61,7 +61,8 @@ const TockaPage = observer(() => {
                 <p><strong>Naziv:</strong> {tocka.naziv}</p>
                 <p><strong>Opis:</strong> {tocka.opis}</p>
 
-                <GlasanjeBox tocka={tockaStore.tocka} aktivno={glasanjeStore.aktivno} />
+                <GlasanjeBox tockaId={tockaStore.tocka.id} />
+
                 <PrilogTable tockaId={tockaStore.tocka.id} />
 
             </div>

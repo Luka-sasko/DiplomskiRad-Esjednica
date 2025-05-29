@@ -3,6 +3,8 @@ package com.example.esjednica.Service;
 import com.example.esjednica.Model.Prilog;
 import com.example.esjednica.Repository.PrilogRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -10,7 +12,6 @@ import java.io.IOException;
 import java.nio.file.*;
 import java.util.List;
 import java.util.UUID;
-
 @Service
 public class PrilogService {
 
@@ -18,7 +19,6 @@ public class PrilogService {
 
     @Autowired
     private PrilogRepository prilogRepository;
-
     public Prilog spremi(MultipartFile file, Long tockaId) throws IOException {
         String original = file.getOriginalFilename();
         String ocisceniNaziv = ocistiNaziv(original);
@@ -37,12 +37,10 @@ public class PrilogService {
 
         return prilogRepository.save(prilog);
     }
-
     public Prilog getById(Long id) {
         return prilogRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Prilog s ID " + id + " ne postoji."));
     }
-
     public void obrisiPoId(Long id) throws IOException {
         Prilog prilog = prilogRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Prilog s ID " + id + " ne postoji."));
@@ -52,7 +50,6 @@ public class PrilogService {
 
         prilogRepository.deleteById(id);
     }
-
     public List<Prilog> dohvatiZaTocku(Long tockaId) {
         return prilogRepository.findByTockaId(tockaId);
     }

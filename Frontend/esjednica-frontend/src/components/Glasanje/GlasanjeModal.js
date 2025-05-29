@@ -1,61 +1,74 @@
-import React, { useState } from 'react';
-import { observer } from 'mobx-react-lite';
+import React, { useEffect, useState } from 'react';
 import { glasanjeStore } from '../../stores/GlasanjeStore';
-import { korisnikGlasanjeStore } from '../../stores/KorisnikGlasanjeStore';
+import { observer } from 'mobx-react-lite';
 
-const GlasanjeModal = observer(({ tockaId, onClose, onGlasano }) => {
-    const [selected, setSelected] = useState('');
+const GlasanjeModal = observer(({ tockaId, onClose }) => {
+  const [preostalo, setPreostalo] = useState(null);
+  const [izabraniGlas, setIzabraniGlas] = useState('');
 
-    const handleSubmit = async () => {
-        if (selected && !korisnikGlasanjeStore.jeGlasao && korisnikGlasanjeStore.preostaloVrijeme > 0) {
-            await glasanjeStore.glasaj(tockaId, { glas: selected });
-            await korisnikGlasanjeStore.provjeriJeLiGlasao(tockaId);
-            await glasanjeStore.loadRezultati(tockaId);
-            await onGlasano?.();
-        }
-    };
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const start = new Date(glasanjeStore.start).getTime();
+      const end = start + glasanjeStore.trajanje * 1000;
+      const now = Date.now();
+      const remaining = Math.floor((end - now) / 1000);
 
-    const glasOptions = ['ZA', 'PROTIV', 'SUZDRŽAN'];
+      if (remaining <= 0) {
+        setPreostalo(0);
+        clearInterval(interval);
+        onClose();
+      } else {
+        setPreostalo(remaining);
+      }
+    }, 1000);
 
-    return (
-        <div className="modal-overlay">
-            <div className="modal-content">
-                <h3>Odaberi svoj glas</h3>
+    return () => clearInterval(interval);
+  }, [glasanjeStore.start, glasanjeStore.trajanje, onClose]);
 
-                {korisnikGlasanjeStore.preostaloVrijeme !== null && (
-                    <p style={{ marginBottom: '10px' }}>
-                        Preostalo vrijeme: <strong>{korisnikGlasanjeStore.preostaloVrijeme} s</strong>
-                    </p>
-                )}
+  const handleGlasaj = async () => {
+    if (!izabraniGlas) return;
 
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', margin: '20px 0' }}>
-                    {glasOptions.map(option => (
-                        <button
-                            key={option}
-                            className={`btn-table edit ${selected === option ? 'active' : ''}`}
-                            onClick={() => setSelected(option)}
-                            disabled={korisnikGlasanjeStore.jeGlasao || korisnikGlasanjeStore.preostaloVrijeme <= 0}
-                            style={{
-                                backgroundColor: selected === option ? '#0a58ca' : '',
-                                opacity: korisnikGlasanjeStore.jeGlasao ? 0.6 : 1
-                            }}
-                        >
-                            {option === 'ZA' ? '✅' : option === 'PROTIV' ? '❌' : '🤔'} {option}
-                        </button>
-                    ))}
-                </div>
+    await glasanjeStore.glasaj(tockaId, { glas: izabraniGlas });
+    onClose();
+  };
+  return (
+    <div className="modal-overlay">
+      <div className="modal-content">
+        <h3>Glasanje</h3>
 
-                <div>
-                    {!korisnikGlasanjeStore.jeGlasao && korisnikGlasanjeStore.preostaloVrijeme > 0 && (
-                        <button className="add-button" onClick={handleSubmit} disabled={!selected}>
-                            Potvrdi glas
-                        </button>
-                    )}
-                    <button className="close-modal" onClick={onClose}>✖</button>
-                </div>
-            </div>
+        {preostalo !== null && (
+          <p className="modal-timer">Preostalo vrijeme: <strong>{preostalo}s</strong></p>
+        )}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', margin: '20px 0' }}>
+          <button
+            className={`btn-table edit ${izabraniGlas === 'ZA' ? 'active' : ''}`}
+            onClick={() => setIzabraniGlas('ZA')}
+          >
+            ZA
+          </button>
+          <button
+            className={`btn-table edit ${izabraniGlas === 'PROTIV' ? 'active' : ''}`}
+            onClick={() => setIzabraniGlas('PROTIV')}
+          >
+            PROTIV
+          </button>
+          <button
+            className={`btn-table edit ${izabraniGlas === 'SUZDRŽAN' ? 'active' : ''}`}
+            onClick={() => setIzabraniGlas('SUZDRŽAN')}
+          >
+            SUZDRŽAN
+          </button>
         </div>
-    );
+
+        <div>
+          <button className="add-button" style={{ marginTop: '20px' }} disabled={!izabraniGlas} onClick={handleGlasaj}>
+            Glasaj
+          </button>
+          <button className="close-modal" onClick={onClose}>✖</button>
+        </div>
+      </div>
+    </div>
+  );
 });
 
 export default GlasanjeModal;
