@@ -32,8 +32,8 @@ public class SjednicaController {
                 return ResponseEntity.status(401).body("Token nije valjan");
             }
 
-            Long userId = JwtUtil.extractUserId(token); // 👈 ID iz tokena
-            sjednica.setKreiraoId((userId.intValue()));              // postavi ga
+            Long userId = JwtUtil.extractUserId(token);
+            sjednica.setKreiraoId((userId.intValue()));
 
             Sjednica nova = sjednicaService.saveSjednica(sjednica);
             return ResponseEntity.ok(nova);

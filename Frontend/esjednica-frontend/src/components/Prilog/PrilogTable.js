@@ -32,7 +32,7 @@ const PrilogTable = observer(({ tockaId }) => {
 
 
     return (
-        <div style={{ marginTop: '30px' }}>
+        <div style={{ marginTop: '10%' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <h2>Prilozi</h2>
                 {isAdmin && (

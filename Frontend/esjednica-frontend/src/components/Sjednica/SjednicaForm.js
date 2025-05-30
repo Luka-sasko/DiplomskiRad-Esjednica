@@ -38,12 +38,11 @@ const SjednicaForm = ({ onSuccess, sjednica }) => {
     setErrors(validationErrors);
     if (Object.keys(validationErrors).length > 0) return;
 
-    const isoFormat = new Date(form.datumOdrzavanja).toISOString().slice(0, 19);
 
     const sjednicaZaSlanje = {
       naziv: form.naziv,
       opis: form.opis,
-      datumOdrzavanja: isoFormat,
+      datumOdrzavanja: form.datumOdrzavanja,
       lokacija: form.lokacija
     };
 

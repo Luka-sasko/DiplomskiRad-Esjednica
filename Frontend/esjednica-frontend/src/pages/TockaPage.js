@@ -6,7 +6,6 @@ import GlasanjeBox from '../components/Glasanje/GlasanjeBox';
 import '../styles/SjednicaPage.css';
 import { observer } from 'mobx-react-lite';
 import PrilogTable from '../components/Prilog/PrilogTable';
-import { glasanjeStore } from '../stores/GlasanjeStore';
 
 const TockaPage = observer(() => {
     const { id } = useParams();

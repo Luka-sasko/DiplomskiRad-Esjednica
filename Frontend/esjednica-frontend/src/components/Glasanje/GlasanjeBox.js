@@ -50,10 +50,10 @@ const GlasanjeBox = observer(({ tockaId }) => {
   };
 
   return (
-    <div>
-      <h3>Glasanje</h3>
+    <div style={{ marginTop: '5%' }}>
+      <h2>Glasanje</h2>
       {isAdmin && !glasanjeStore.aktivno && (
-        <button  className="add-button" onClick={() => {
+        <button className="add-button" onClick={() => {
           const trajanje = prompt("Trajanje u sekundama:");
           if (trajanje) {
             glasanjeStore.startGlasanje(tockaId, trajanje);
@@ -63,25 +63,31 @@ const GlasanjeBox = observer(({ tockaId }) => {
 
       {glasanjeStore.aktivno && preostalo !== null && (
         <div className="glasanje-timer-box">
-          <p className="glasanje-timer-text">Preostalo vrijeme za glasanje: <strong>{preostalo}s</strong></p>
+          <p style = {{marginTop : '2%'}}className="glasanje-timer-text">Preostalo vrijeme za glasanje: <strong>{preostalo}s</strong></p>
         </div>
       )}
 
-      {glasanjeStore.aktivno && !vrijemeZavrseno() ? (
+      {glasanjeStore.aktivno && !vrijemeZavrseno() && (
         glasanjeStore.jeGlasao ? <p>Glasanje evidentirano za ovaj račun.</p> :
-          <button onClick={() => setShowModal(true)}>Glasaj</button>
-      ) : (
-        <>
-          <p>Rezultati:</p>
-          <ul>
-            <li>ZA: {glasanjeStore.rezultati.filter(g => g.glas === "ZA").length}</li>
-            <li>PROTIV: {glasanjeStore.rezultati.filter(g => g.glas === "PROTIV").length}</li>
-            <li>SUZDRŽAN: {glasanjeStore.rezultati.filter(g => g.glas === "SUZDRŽAN").length}</li>
-          </ul>
-
-          <RezultatiChart/>
-        </>
+          <button className="add-button" onClick={() => setShowModal(true)}>Glasaj</button>
       )}
+
+      {glasanjeStore.start &&
+        Date.now() > new Date(glasanjeStore.start).getTime() + glasanjeStore.trajanje * 1000 && (
+          <div>
+            <h3>Rezultati:</h3>
+            <ul>
+              <li>ZA: {glasanjeStore.rezultati.filter(g => g.glas === "ZA").length}</li>
+              <li>PROTIV: {glasanjeStore.rezultati.filter(g => g.glas === "PROTIV").length}</li>
+              <li>SUZDRŽAN: {glasanjeStore.rezultati.filter(g => g.glas === "SUZDRŽAN").length}</li>
+            </ul>
+
+            <RezultatiChart />
+          </div>
+        )}
+
+
+
       {showModal && <GlasanjeModal tockaId={tockaId} onClose={() => setShowModal(false)} />}
     </div>
   );

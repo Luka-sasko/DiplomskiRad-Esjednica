@@ -111,7 +111,9 @@ const SjednicaDetailPage = observer(() => {
                 <th onClick={() => handleSort('opis')}>
                   Opis{renderSortIcon('opis')}
                 </th>
-                <th>Akcije</th>
+                {isAdmin ? 
+                  <th>Akcije</th> : null
+                }
               </tr>
             </thead>
             <tbody>
@@ -119,8 +121,8 @@ const SjednicaDetailPage = observer(() => {
                 <tr key={t.id} onClick={() => navigate(`/sjednice/${id}/tocke/${t.id}`)} style={{ cursor: 'pointer' }}>
                   <td>{t.naziv}</td>
                   <td>{t.opis}</td>
-                  <td onClick={(e) => e.stopPropagation()}>
-                    {isAdmin && (
+                  {isAdmin ? (
+                    <td onClick={(e) => e.stopPropagation()}>
                       <div>
                         <button className="btn-table edit" onClick={() => setSelectedTocka(t)}>Uredi</button>
                         <button className="btn-table delete" onClick={async () => {
@@ -129,10 +131,10 @@ const SjednicaDetailPage = observer(() => {
                             await tockaStore.fetchBySjednicaId(id);
                           }
                         }}>Obriši</button>
-                      </div>)}
-                  </td>
+                      </div>
+                    </td>) : null}
                 </tr>
-                
+
               ))}
             </tbody>
           </table>

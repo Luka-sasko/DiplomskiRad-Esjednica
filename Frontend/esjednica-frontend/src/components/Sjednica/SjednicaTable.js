@@ -35,7 +35,9 @@ const SjednicaTable = ({ sjednice, onEdit, onDelete, onSort, sortKey, sortAsc })
             <th onClick={() => handleSort('lokacija')}>
               Lokacija {renderSortIcon('lokacija')}
             </th>
-            <th>Akcije</th>
+            {isAdmin ? (
+              <th>Akcije</th>
+            ) : null}
           </tr>
         </thead>
         <tbody>
@@ -44,14 +46,18 @@ const SjednicaTable = ({ sjednice, onEdit, onDelete, onSort, sortKey, sortAsc })
               <td>{s.naziv}</td>
               <td>{new Date(s.datumOdrzavanja).toLocaleString()}</td>
               <td>{s.lokacija}</td>
-              <td onClick={(e) => e.stopPropagation()}>
-                {isAdmin && (
+              {isAdmin ? (
+                <td onClick={(e) => e.stopPropagation()}>
+
                   <div>
                     <button type="button" className="btn-table edit" onClick={() => onEdit(s)}>Uredi</button>
                     <button type="button" className="btn-table delete" onClick={() => onDelete(s)}>Obriši</button>
                   </div>
-                )}
-              </td>
+                </td>
+              )
+                :
+                null}
+
             </tr>
           ))}
         </tbody>
