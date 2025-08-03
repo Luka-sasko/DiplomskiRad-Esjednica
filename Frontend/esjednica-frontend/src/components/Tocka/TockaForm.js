@@ -1,22 +1,21 @@
-import React, { useState, useEffect } from 'react';
-import { observer } from 'mobx-react-lite';
-import { tockaStore } from '../../stores/TockaStore';
+import React, { useState, useEffect } from "react";
+import { observer } from "mobx-react-lite";
+import { tockaStore } from "../../stores/TockaStore";
 
 const TockaForm = observer(({ tocka, sjednicaId, onSuccess }) => {
   const [form, setForm] = useState({
-    naziv: '',
-    opis: ''
+    naziv: "",
+    opis: "",
   });
-  
 
   useEffect(() => {
     if (tocka) {
       setForm({
-        naziv: tocka.naziv || '',
-        opis: tocka.opis || ''
+        naziv: tocka.naziv || "",
+        opis: tocka.opis || "",
       });
     } else {
-      setForm({ naziv: '', opis: '' });
+      setForm({ naziv: "", opis: "" });
     }
   }, [tocka]);
 
@@ -30,7 +29,7 @@ const TockaForm = observer(({ tocka, sjednicaId, onSuccess }) => {
     if (tocka) {
       await tockaStore.update(tocka.id, { ...form, sjednicaId });
     } else {
-      await tockaStore.add(sjednicaId,{ ...form, sjednicaId });
+      await tockaStore.add(sjednicaId, { ...form, sjednicaId });
     }
 
     if (onSuccess) onSuccess();
@@ -38,7 +37,7 @@ const TockaForm = observer(({ tocka, sjednicaId, onSuccess }) => {
 
   return (
     <form onSubmit={handleSubmit} className="sjednica-form">
-      <h3>{tocka ? 'Uredi točku' : 'Dodaj novu točku'}</h3>
+      <h3>{tocka ? "Uredi točku" : "Dodaj novu točku"}</h3>
       <input
         type="text"
         name="naziv"
@@ -54,7 +53,7 @@ const TockaForm = observer(({ tocka, sjednicaId, onSuccess }) => {
         onChange={handleChange}
         rows={3}
       />
-      <button type="submit">{tocka ? 'Spremi promjene' : 'Dodaj točku'}</button>
+      <button type="submit">{tocka ? "Spremi promjene" : "Dodaj točku"}</button>
     </form>
   );
 });

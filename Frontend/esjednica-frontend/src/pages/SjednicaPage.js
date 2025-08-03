@@ -1,29 +1,30 @@
-import React, { useEffect, useState } from 'react';
-import { observer } from 'mobx-react-lite';
-import { sjednicaStore } from '../stores/SjednicaStore';
-import SjednicaForm from '../components/Sjednica/SjednicaForm';
-import SjednicaTable from '../components/Sjednica/SjednicaTable';
-import '../styles/SjednicaPage.css';
+import React, { useEffect, useState } from "react";
+import { observer } from "mobx-react-lite";
+import { sjednicaStore } from "../stores/SjednicaStore";
+import SjednicaForm from "../components/Sjednica/SjednicaForm";
+import SjednicaTable from "../components/Sjednica/SjednicaTable";
+import "../styles/SjednicaPage.css";
 
 const SjednicaPage = observer(() => {
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [selected, setSelected] = useState(null);
-  const [search, setSearch] = useState('');
-  const [sortKey, setSortKey] = useState('naziv');
+  const [search, setSearch] = useState("");
+  const [sortKey, setSortKey] = useState("naziv");
   const [sortAsc, setSortAsc] = useState(true);
   const [currentPage, setCurrentPage] = useState(0);
   const [itemsPerPage, setItemsPerPage] = useState(5);
-  const user = JSON.parse(localStorage.getItem('user'));
-  const isAdmin = user?.roles?.includes('ROLE_ADMIN');
+  const user = JSON.parse(localStorage.getItem("user"));
+  const isAdmin = user?.roles?.includes("ROLE_ADMIN");
 
   useEffect(() => {
     sjednicaStore.fetchAll();
   }, []);
 
-  const filtered = sjednicaStore.sjednice.filter(s =>
-    s.naziv.toLowerCase().includes(search.toLowerCase()) ||
-    s.lokacija.toLowerCase().includes(search.toLowerCase())
+  const filtered = sjednicaStore.sjednice.filter(
+    (s) =>
+      s.naziv.toLowerCase().includes(search.toLowerCase()) ||
+      s.lokacija.toLowerCase().includes(search.toLowerCase())
   );
 
   const sorted = [...filtered].sort((a, b) => {
@@ -78,7 +79,12 @@ const SjednicaPage = observer(() => {
           <option value={20}>20</option>
         </select>
         {isAdmin && (
-        <button className="add-button" onClick={() => setIsAddModalOpen(true)}>➕ Dodaj sjednicu</button>
+          <button
+            className="add-button"
+            onClick={() => setIsAddModalOpen(true)}
+          >
+            ➕ Dodaj sjednicu
+          </button>
         )}
       </div>
 
@@ -89,7 +95,9 @@ const SjednicaPage = observer(() => {
           setIsEditModalOpen(true);
         }}
         onDelete={(sjednica) => {
-          if (window.confirm(`Želite li obrisati sjednicu "${sjednica.naziv}"?`)) {
+          if (
+            window.confirm(`Želite li obrisati sjednicu "${sjednica.naziv}"?`)
+          ) {
             sjednicaStore.delete(sjednica.id);
           }
         }}
@@ -98,21 +106,26 @@ const SjednicaPage = observer(() => {
         sortAsc={sortAsc}
       />
 
-
       <div className="pagination-controls">
-        <button onClick={() => goToPage(currentPage - 1)} disabled={currentPage === 0}>
+        <button
+          onClick={() => goToPage(currentPage - 1)}
+          disabled={currentPage === 0}
+        >
           ← Prethodna
         </button>
         {Array.from({ length: pageCount }, (_, i) => (
           <button
             key={i}
             onClick={() => goToPage(i)}
-            className={i === currentPage ? 'active' : ''}
+            className={i === currentPage ? "active" : ""}
           >
             {i + 1}
           </button>
         ))}
-        <button onClick={() => goToPage(currentPage + 1)} disabled={currentPage >= pageCount - 1}>
+        <button
+          onClick={() => goToPage(currentPage + 1)}
+          disabled={currentPage >= pageCount - 1}
+        >
           Sljedeća →
         </button>
       </div>
@@ -120,7 +133,12 @@ const SjednicaPage = observer(() => {
       {isAddModalOpen && (
         <div className="modal-overlay">
           <div className="modal-content">
-            <button className="close-modal" onClick={() => setIsAddModalOpen(false)}>✖</button>
+            <button
+              className="close-modal"
+              onClick={() => setIsAddModalOpen(false)}
+            >
+              ✖
+            </button>
             <SjednicaForm onSuccess={() => setIsAddModalOpen(false)} />
           </div>
         </div>
@@ -129,8 +147,16 @@ const SjednicaPage = observer(() => {
       {isEditModalOpen && selected && (
         <div className="modal-overlay">
           <div className="modal-content">
-            <button className="close-modal" onClick={() => setIsEditModalOpen(false)}>✖</button>
-            <SjednicaForm sjednica={selected} onSuccess={() => setIsEditModalOpen(false)} />
+            <button
+              className="close-modal"
+              onClick={() => setIsEditModalOpen(false)}
+            >
+              ✖
+            </button>
+            <SjednicaForm
+              sjednica={selected}
+              onSuccess={() => setIsEditModalOpen(false)}
+            />
           </div>
         </div>
       )}

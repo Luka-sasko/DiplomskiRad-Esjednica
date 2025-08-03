@@ -1,10 +1,10 @@
-import React, { useEffect, useState } from 'react';
-import { glasanjeStore } from '../../stores/GlasanjeStore';
-import { observer } from 'mobx-react-lite';
+import React, { useEffect, useState } from "react";
+import { glasanjeStore } from "../../stores/GlasanjeStore";
+import { observer } from "mobx-react-lite";
 
 const GlasanjeModal = observer(({ tockaId, onClose }) => {
   const [preostalo, setPreostalo] = useState(null);
-  const [izabraniGlas, setIzabraniGlas] = useState('');
+  const [izabraniGlas, setIzabraniGlas] = useState("");
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -37,34 +37,56 @@ const GlasanjeModal = observer(({ tockaId, onClose }) => {
         <h3>Glasanje</h3>
 
         {preostalo !== null && (
-          <p className="modal-timer">Preostalo vrijeme: <strong>{preostalo}s</strong></p>
+          <p className="modal-timer">
+            Preostalo vrijeme: <strong>{preostalo}s</strong>
+          </p>
         )}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', margin: '20px 0' }}>
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            gap: "10px",
+            margin: "20px 0",
+          }}
+        >
           <button
-            className={`btn-table edit ${izabraniGlas === 'ZA' ? 'active' : ''}`}
-            onClick={() => setIzabraniGlas('ZA')}
+            className={`btn-table edit ${
+              izabraniGlas === "ZA" ? "active" : ""
+            }`}
+            onClick={() => setIzabraniGlas("ZA")}
           >
             ZA
           </button>
           <button
-            className={`btn-table edit ${izabraniGlas === 'PROTIV' ? 'active' : ''}`}
-            onClick={() => setIzabraniGlas('PROTIV')}
+            className={`btn-table edit ${
+              izabraniGlas === "PROTIV" ? "active" : ""
+            }`}
+            onClick={() => setIzabraniGlas("PROTIV")}
           >
             PROTIV
           </button>
           <button
-            className={`btn-table edit ${izabraniGlas === 'SUZDRŽAN' ? 'active' : ''}`}
-            onClick={() => setIzabraniGlas('SUZDRŽAN')}
+            className={`btn-table edit ${
+              izabraniGlas === "SUZDRŽAN" ? "active" : ""
+            }`}
+            onClick={() => setIzabraniGlas("SUZDRŽAN")}
           >
             SUZDRŽAN
           </button>
         </div>
 
         <div>
-          <button className="add-button" style={{ marginTop: '20px' }} disabled={!izabraniGlas} onClick={handleGlasaj}>
+          <button
+            className="add-button"
+            style={{ marginTop: "20px" }}
+            disabled={!izabraniGlas}
+            onClick={handleGlasaj}
+          >
             Glasaj
           </button>
-          <button className="close-modal" onClick={onClose}>✖</button>
+          <button className="close-modal" onClick={onClose}>
+            ✖
+          </button>
         </div>
       </div>
     </div>

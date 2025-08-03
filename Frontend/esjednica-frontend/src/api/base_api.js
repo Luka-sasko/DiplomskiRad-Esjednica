@@ -1,13 +1,13 @@
-import axios from 'axios';
+import axios from "axios";
 
-const BASE_URL = 'http://localhost:8080/api';
+const BASE_URL = "http://localhost:8080/api";
 
 const axiosInstance = axios.create({
   baseURL: BASE_URL,
 });
 
 axiosInstance.interceptors.request.use((config) => {
-  const token = localStorage.getItem('token');
+  const token = localStorage.getItem("token");
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }
@@ -21,15 +21,15 @@ export const del = (url) => axiosInstance.delete(url);
 export const downloadFile = async (url) => {
   try {
     const response = await axiosInstance.get(url, {
-      responseType: 'blob',
+      responseType: "blob",
     });
 
-    const contentType = response.headers['content-type'];
+    const contentType = response.headers["content-type"];
     const blob = new Blob([response.data], { type: contentType });
 
-    let filename = 'prilog'; // fallback
+    let filename = "prilog"; // fallback
 
-    const disposition = response.headers['content-disposition'];
+    const disposition = response.headers["content-disposition"];
     if (disposition) {
       const utf8Match = disposition.match(/filename\*=UTF-8''([^;\n]*)/);
       if (utf8Match && utf8Match[1]) {
@@ -42,18 +42,15 @@ export const downloadFile = async (url) => {
       }
     }
 
-    const link = document.createElement('a');
+    const link = document.createElement("a");
     link.href = URL.createObjectURL(blob);
-    link.setAttribute('download', filename);
+    link.setAttribute("download", filename);
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
     URL.revokeObjectURL(link.href);
   } catch (error) {
-    console.error('Greška pri preuzimanju datoteke:', error);
-    alert('Preuzimanje nije uspjelo.');
+    console.error("Greška pri preuzimanju datoteke:", error);
+    alert("Preuzimanje nije uspjelo.");
   }
 };
-
-
-

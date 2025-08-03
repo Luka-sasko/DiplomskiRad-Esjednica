@@ -1,5 +1,5 @@
-import { makeAutoObservable } from 'mobx';
-import { GlasanjeService } from '../api/services/GlasanjeService';
+import { makeAutoObservable } from "mobx";
+import { GlasanjeService } from "../api/services/GlasanjeService";
 
 class GlasanjeStore {
   aktivno = false;
@@ -22,8 +22,8 @@ class GlasanjeStore {
   async ucitajGlasove(tockaId) {
     const res = await GlasanjeService.getResults(tockaId);
     this.rezultati = res.data;
-    const user = JSON.parse(localStorage.getItem('user'));
-    this.jeGlasao = res.data.some(g => g.korisnikId === user.id);
+    const user = JSON.parse(localStorage.getItem("user"));
+    this.jeGlasao = res.data.some((g) => g.korisnikId === user.id);
   }
 
   async glasaj(tockaId, data) {
@@ -31,7 +31,6 @@ class GlasanjeStore {
     this.jeGlasao = true;
     await this.ucitajGlasove(tockaId);
   }
-
 
   async startGlasanje(tockaId, trajanje) {
     await GlasanjeService.start(tockaId, trajanje);

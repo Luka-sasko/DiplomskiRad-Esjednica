@@ -45,6 +45,12 @@ public class SjednicaController {
     @PreAuthorize("hasAnyRole('ADMIN', 'KORISNIK', 'GLEDATELJ', 'PREDLAGATELJ')")
     @GetMapping
     public ResponseEntity<?> getSjednice() {
+        return ResponseEntity.ok(sjednicaService.getActiveSjednice());
+    }
+
+    @PreAuthorize("hasAnyRole('ADMIN')")
+    @GetMapping("/all")
+    public ResponseEntity<?> getAllSjednice() {
         return ResponseEntity.ok(sjednicaService.getAllSjednice());
     }
 

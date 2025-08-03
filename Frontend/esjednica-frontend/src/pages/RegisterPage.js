@@ -1,6 +1,6 @@
-import React from 'react';
-import RegisterForm from '../components/Login_Register/RegisterForm';
-import '../styles/AuthPage.css';
+import React from "react";
+import RegisterForm from "../components/Login_Register/RegisterForm";
+import "../styles/AuthPage.css";
 
 const RegisterPage = () => {
   return (

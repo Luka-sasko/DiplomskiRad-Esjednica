@@ -1,13 +1,14 @@
-import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import React from "react";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
-import Navbar from '../components/common/Navbar';
-import LoginPage from './LoginPage';
-import RegisterPage from './RegisterPage';
-import HomePage from './HomePage';
-import SjednicePage from './SjednicaPage';
-import SjednicaDetailPage from './SjednicaDetailPage';
-import TockaPage from './TockaPage';
+import Navbar from "../components/common/Navbar";
+import LoginPage from "./LoginPage";
+import RegisterPage from "./RegisterPage";
+import HomePage from "./HomePage";
+import SjednicePage from "./SjednicaPage";
+import SjednicaDetailPage from "./SjednicaDetailPage";
+import TockaPage from "./TockaPage";
+import { ProfilePage } from "./ProfilePage";
 
 const IndexRoutes = () => {
   return (
@@ -15,6 +16,7 @@ const IndexRoutes = () => {
       <Navbar />
       <Routes>
         <Route path="/" element={<HomePage />} />
+        <Route path="/racun" element={<ProfilePage />} />
         <Route path="/prijava" element={<LoginPage />} />
         <Route path="/registracija" element={<RegisterPage />} />
         <Route path="/sjednice" element={<SjednicePage />} />

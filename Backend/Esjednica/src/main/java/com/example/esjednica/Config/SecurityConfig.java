@@ -49,8 +49,6 @@ public class SecurityConfig {
                         .requestMatchers("/api/tocke/**").authenticated()
                         .requestMatchers("/ws/**").permitAll()
                         .anyRequest().permitAll()
-
-
                 )
                 .authenticationProvider(jwtAuthenticationProvider)
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);

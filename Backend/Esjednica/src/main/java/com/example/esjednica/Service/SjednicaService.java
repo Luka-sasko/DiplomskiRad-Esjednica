@@ -7,6 +7,8 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -16,14 +18,15 @@ import java.util.Optional;
 public class SjednicaService {
     @Autowired
     private SjednicaRepository sjednicaRepository;
-    @Autowired
-    private GlasRepository glasRepository;
-
     public Sjednica saveSjednica(Sjednica sjednica) {
         return sjednicaRepository.save(sjednica);
     }
     public List<Sjednica> getAllSjednice() {
         return sjednicaRepository.findAll();
+    }
+    public List<Sjednica> getActiveSjednice() {
+        LocalDateTime curretnLocalDateTime = LocalDateTime.now();
+        return sjednicaRepository.findAllActive(curretnLocalDateTime);
     }
     public Optional<Sjednica> findById(Long id) {
         return sjednicaRepository.findById(id);
@@ -31,16 +34,6 @@ public class SjednicaService {
     public void deleteById(Long id) {
         sjednicaRepository.deleteById(id);
     }
-    public Map<String, Integer> getRezultati(Long tockaId) {
-        List<Glas> glasovi = glasRepository.findByTockaId(tockaId);
-        Map<String, Integer> rezultati = new HashMap<>();
-        rezultati.put("ZA", 0);
-        rezultati.put("PROTIV", 0);
-        rezultati.put("UZDRŽAN", 0);
-        for (Glas glas : glasovi) {
-            rezultati.put(glas.getGlas(), rezultati.get(glas.getGlas()) + 1);
-        }
-        return rezultati;
-    }
+
 
 }

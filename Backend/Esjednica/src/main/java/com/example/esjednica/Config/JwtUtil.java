@@ -26,7 +26,7 @@ public class JwtUtil {
         signingKey = Keys.hmacShaKeyFor(secretKey.getBytes());
     }
 
-    // ✅ Generiranje tokena s ID-em i ulogama
+    // Generiranje tokena s ID-em i ulogama
     public String generateToken(String username, List<String> roles, Long userId) {
         return Jwts.builder()
                 .setSubject(username)
@@ -38,32 +38,32 @@ public class JwtUtil {
                 .compact();
     }
 
-    // ✅ Provjera valjanosti tokena
+    // Provjera valjanosti tokena
     public static boolean isTokenValid(String token) {
         try {
-            extractAllClaims(token); // baca iznimku ako nije valjan
+            extractAllClaims(token);
             return true;
         } catch (JwtException | IllegalArgumentException e) {
             return false;
         }
     }
 
-    // ✅ Dohvat korisničkog imena
+    //  Dohvat korisničkog imena
     public String extractUsername(String token) {
         return extractAllClaims(token).getSubject();
     }
 
-    // ✅ Dohvat korisničkog ID-a
+    // Dohvat korisničkog ID-a
     public static Long extractUserId(String token) {
         return extractAllClaims(token).get("id", Long.class);
     }
 
-    // ✅ Dohvat korisničkih uloga
+    //  Dohvat korisničkih uloga
     public List<String> extractRoles(String token) {
         return extractAllClaims(token).get("roles", List.class);
     }
 
-    // ✅ Sve claimove
+    //  Sve claimove
     private static Claims extractAllClaims(String token) {
         return Jwts.parserBuilder()
                 .setSigningKey(signingKey)

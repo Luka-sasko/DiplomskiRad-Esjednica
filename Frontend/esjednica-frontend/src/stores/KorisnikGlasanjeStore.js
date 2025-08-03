@@ -1,4 +1,4 @@
-import { makeAutoObservable, runInAction } from 'mobx';
+import { makeAutoObservable, runInAction } from "mobx";
 
 class KorisnikGlasanjeStore {
   preostaloVrijeme = 0;
@@ -13,7 +13,7 @@ class KorisnikGlasanjeStore {
     const delay = 5000;
     const end = start + delay + trajanjeSekundi * 1000;
 
-    this.stopCountdown(); 
+    this.stopCountdown();
 
     this.timer = setInterval(() => {
       const now = new Date().getTime();

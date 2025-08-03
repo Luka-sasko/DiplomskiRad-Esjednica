@@ -19,24 +19,23 @@ public class PrilogService {
 
     @Autowired
     private PrilogRepository prilogRepository;
+
     public Prilog spremi(MultipartFile file, Long tockaId) throws IOException {
         String original = file.getOriginalFilename();
         String ocisceniNaziv = ocistiNaziv(original);
         String ekstenzija = ocisceniNaziv.substring(ocisceniNaziv.lastIndexOf('.') + 1);
         String noviNaziv = UUID.randomUUID() + "_" + ocisceniNaziv;
-
         Path path = Paths.get(UPLOAD_DIR, noviNaziv);
         Files.createDirectories(path.getParent());
         Files.write(path, file.getBytes());
-
         Prilog prilog = new Prilog();
         prilog.setNaziv(ocisceniNaziv);
         prilog.setEkstenzija(ekstenzija);
         prilog.setPutanja(path.toString());
         prilog.setTockaId(tockaId);
-
         return prilogRepository.save(prilog);
     }
+
     public Prilog getById(Long id) {
         return prilogRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Prilog s ID " + id + " ne postoji."));
@@ -65,10 +64,10 @@ public class PrilogService {
         }
 
         String naziv = original
-                .replaceAll("\\s+", "_")               // razmaci u _
-                .replaceAll("[^a-zA-Z0-9_-]", "");     // ukloni specijalne znakove
+                .replaceAll("\\s+", "_")
+                .replaceAll("[^a-zA-Z0-9_-]", "");
 
-        return naziv + ekstenzija.toLowerCase();  // npr. dokument.pdf
+        return naziv + ekstenzija.toLowerCase();
     }
 
 

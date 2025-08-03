@@ -1,0 +1,167 @@
+{
+  "info": {
+    "name": "e-Sjednica API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_postman_id": "e-sjednica-api-20250521163728"
+  },
+  "item": [
+    {
+      "name": "Login",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"username\": \"admin1\",\n  \"password\": \"admin1\"\n}"
+        },
+        "url": {
+          "raw": "http://localhost:8080/api/users/login"
+        }
+      }
+    },
+    {
+      "name": "Registracija",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"username\": \"novikorisnik\",\n  \"password\": \"tajna\",\n  \"ime\": \"Test\",\n  \"prezime\": \"Korisnik\",\n  \"email\": \"test@mail.com\",\n  \"roles\": \"ROLE_KORISNIK\"\n}"
+        },
+        "url": {
+          "raw": "http://localhost:8080/api/users/register"
+        }
+      }
+    },
+    {
+      "name": "Dodaj sjednicu",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer <JWT_TOKEN>"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"naziv\": \"Sjednica svibanj\",\n  \"opis\": \"Rasprava o to\\u010dkama\",\n  \"datumOdrzavanja\": \"2025-05-30T10:00:00\",\n  \"lokacija\": \"Dvorana 1\"\n}"
+        },
+        "url": {
+          "raw": "http://localhost:8080/api/sjednice"
+        }
+      }
+    },
+    {
+      "name": "Dohvati sve sjednice",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer <JWT_TOKEN>"
+          }
+        ],
+        "url": {
+          "raw": "http://localhost:8080/api/sjednice"
+        }
+      }
+    },
+    {
+      "name": "Dohvati sjednicu po ID",
+      "request": {
+        "method": "GET",
+        "url": {
+          "raw": "http://localhost:8080/api/sjednice/1"
+        }
+      }
+    },
+    {
+      "name": "Dodaj to\u010dku",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer <JWT_TOKEN>"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"naziv\": \"To\\u010dka 1\",\n  \"opis\": \"Opis to\\u010dke\"\n}"
+        },
+        "url": {
+          "raw": "http://localhost:8080/api/tocke/sjednica/1"
+        }
+      }
+    },
+    {
+      "name": "Dohvati to\u010dke za sjednicu",
+      "request": {
+        "method": "GET",
+        "url": {
+          "raw": "http://localhost:8080/api/tocke/sjednica/1"
+        }
+      }
+    },
+    {
+      "name": "Glasaj za to\u010dku",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer <JWT_TOKEN>"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"korisnikId\": 2,\n  \"glas\": \"ZA\"\n}"
+        },
+        "url": {
+          "raw": "http://localhost:8080/api/glasanja/tocka/1"
+        }
+      }
+    },
+    {
+      "name": "Dohvati glasove za to\u010dku",
+      "request": {
+        "method": "GET",
+        "url": {
+          "raw": "http://localhost:8080/api/glasanja/tocka/1"
+        }
+      }
+    },
+    {
+      "name": "Dohvati dokumente za to\u010dku",
+      "request": {
+        "method": "GET",
+        "url": {
+          "raw": "http://localhost:8080/api/dokumenti/tocka/1"
+        }
+      }
+    }
+  ]
+}
