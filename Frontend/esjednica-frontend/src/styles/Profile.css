@@ -5,6 +5,12 @@
   padding: 40px 16px;
   background-color: #f9f9f9;
 }
+.profile-label {
+  margin: 6px 0 4px;
+  font-size: 14px;
+  font-weight: bold;
+  color: #333;
+}
 
 .profile-card {
   background-color: white;

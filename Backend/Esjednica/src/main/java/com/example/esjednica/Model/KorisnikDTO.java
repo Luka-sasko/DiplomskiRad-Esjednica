@@ -1,6 +1,7 @@
 package com.example.esjednica.Model;
 
 public class KorisnikDTO {
+    private Long id;
 
     private String ime;
 
@@ -8,12 +9,14 @@ public class KorisnikDTO {
 
     private String email;
 
-
     private String roles;
 
     private String username;
 
     // Getteri i setteri
+    public void setId(Long id) {this.id = id;}
+    public Long getId() {return id;}
+
     public String getIme() { return ime; }
     public void setIme(String ime) { this.ime = ime; }
 

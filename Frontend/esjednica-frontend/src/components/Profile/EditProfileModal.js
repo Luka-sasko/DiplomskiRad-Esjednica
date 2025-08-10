@@ -70,18 +70,27 @@ export const EditProfileModal = observer(({ open, onClose }) => {
       <div className="modal-card">
         <h3 className="modal-title">Ažuriraj podatke</h3>
         <form onSubmit={onSubmit} className="modal-form">
+          <label className="profile-label" htmlFor="ime">
+            Ime
+          </label>
           <input
             className="modal-input"
             value={formData.ime}
             onChange={(e) => handleChange("ime", e.target.value)}
           />
 
+          <label className="profile-label" htmlFor="prezime">
+            Prezime
+          </label>
           <input
             className="modal-input"
             value={formData.prezime}
             onChange={(e) => handleChange("prezime", e.target.value)}
           />
 
+          <label className="profile-label" htmlFor="email">
+            Email
+          </label>
           <input
             className="modal-input"
             type="email"
@@ -89,6 +98,9 @@ export const EditProfileModal = observer(({ open, onClose }) => {
             onChange={(e) => handleChange("email", e.target.value)}
           />
 
+          <label className="profile-label" htmlFor="korisnicko_ime">
+            Korisničko ime
+          </label>
           <input
             className="modal-input"
             value={formData.username}

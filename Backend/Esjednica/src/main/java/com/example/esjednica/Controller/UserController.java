@@ -1,14 +1,10 @@
 package com.example.esjednica.Controller;
 
 import com.example.esjednica.Config.JwtUtil;
-import com.example.esjednica.Model.KorisnikDTO;
-import com.example.esjednica.Model.KorisnikUpdateDTO;
-import com.example.esjednica.Model.LoginRequest;
-import com.example.esjednica.Model.Korisnik;
+import com.example.esjednica.Model.*;
 import com.example.esjednica.Repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
@@ -16,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.*;
 
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/users")
@@ -146,8 +143,144 @@ public class UserController {
         }
     }
 
+    @PutMapping("/password")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('PREDLAGATELJ') or hasRole('KORISNIK') or hasRole('GLEDATELJ')")
+    public ResponseEntity<?> changePassword(
+            @RequestHeader("Authorization") String authHeader,
+            @RequestBody @jakarta.validation.Valid LozinkaUpdateDTO req) {
 
+        try {
+            if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+                return ResponseEntity.status(401).body("Token nedostaje ili je neispravan");
+            }
+            String token = authHeader.substring(7);
+            if (!JwtUtil.isTokenValid(token)) {
+                return ResponseEntity.status(401).body("Token nije valjan");
+            }
 
+            if (!req.getNewPassword().equals(req.getConfirmNewPassword())) {
+                return ResponseEntity.badRequest().body("Nova lozinka i potvrda se ne podudaraju");
+            }
+
+            Long userId = JwtUtil.extractUserId(token);
+            Optional<Korisnik> korisnikOpt = userRepository.findById(userId);
+            if (korisnikOpt.isEmpty()) {
+                return ResponseEntity.status(404).body("Korisnik nije pronađen");
+            }
+
+            Korisnik korisnik = korisnikOpt.get();
+
+            String trenutnaLozinka = korisnik.getLozinka();
+            if (!passwordEncoder.matches(req.getCurrentPassword(),trenutnaLozinka)) {
+                return ResponseEntity.status(400).body("Trenutna lozinka nije ispravna");
+            }
+            if (passwordEncoder.matches(req.getNewPassword(), trenutnaLozinka)) {
+                return ResponseEntity.status(400).body("Nova lozinka ne smije biti ista kao trenutna");
+            }
+
+            korisnik.setLozinka(passwordEncoder.encode(req.getNewPassword()));
+            userRepository.save(korisnik);
+
+            return ResponseEntity.ok(true);
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body("Greška: " + e.getMessage());
+        }
+    }
+
+    @PutMapping("/{userId}/roles")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<?> updateUserRoles(
+            @RequestHeader("Authorization") String authHeader,
+            @PathVariable Long userId,
+            @RequestBody @jakarta.validation.Valid RolaUpdateDTO req) {
+
+        try {
+            if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+                return ResponseEntity.status(401).body("Token nedostaje ili je neispravan");
+            }
+            String token = authHeader.substring(7);
+            if (!JwtUtil.isTokenValid(token)) {
+                return ResponseEntity.status(401).body("Token nije valjan");
+            }
+
+            Optional<Korisnik> korisnikOpt = userRepository.findById(userId);
+            if (korisnikOpt.isEmpty()) {
+                return ResponseEntity.status(404).body("Korisnik nije pronađen");
+            }
+
+            Korisnik korisnik = korisnikOpt.get();
+
+            korisnik.setRoles(req.getRoles());
+
+            Korisnik saved = userRepository.save(korisnik);
+
+            KorisnikDTO dto = new KorisnikDTO();
+            dto.setIme(saved.getIme());
+            dto.setPrezime(saved.getPrezime());
+            dto.setEmail(saved.getEmail());
+            dto.setUsername(saved.getUsername());
+            dto.setRoles(saved.getRoles());
+
+            return ResponseEntity.ok(dto);
+        } catch (IllegalArgumentException iae) {
+            return ResponseEntity.badRequest().body(iae.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body("Greška: " + e.getMessage());
+        }
+    }
+
+    @GetMapping("/search")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<?> searchUsers(
+            @RequestHeader("Authorization") String authHeader,
+            @RequestParam(name = "role", required = false) String role,
+            @RequestParam(name = "q", required = false) String q,
+            @RequestParam(name = "includeAdmins", defaultValue = "false") boolean includeAdmins,
+            @org.springframework.data.web.PageableDefault(sort = {"prezime","ime"}, size = 20)
+            org.springframework.data.domain.Pageable pageable) {
+
+        try {
+            if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+                return ResponseEntity.status(401).body("Token nedostaje ili je neispravan");
+            }
+            String token = authHeader.substring(7);
+            if (!JwtUtil.isTokenValid(token)) {
+                return ResponseEntity.status(401).body("Token nije valjan");
+            }
+
+            String normalizedRole = null;
+            if (role != null && !role.isBlank()) {
+                normalizedRole = role.trim().toUpperCase(Locale.ROOT);
+                if (!normalizedRole.startsWith("ROLE_")) normalizedRole = "ROLE_" + normalizedRole;
+                if (!ALLOWED_ROLES.contains(normalizedRole)) {
+                    return ResponseEntity.badRequest().body("Nepoznata rola: " + role);
+                }
+            }
+
+            String roleLike  = (normalizedRole == null) ? null : "%," + normalizedRole + ",%";
+            String adminLike = "%,ROLE_ADMIN,%";
+            String qLike     = (q == null || q.isBlank()) ? null : "%" + q.toLowerCase(Locale.ROOT) + "%";
+
+            var page = userRepository.searchUsersByRoleAndQuery(
+                    includeAdmins, roleLike, adminLike, qLike, pageable
+            );
+
+            var dtoPage = page.map(u -> {
+                KorisnikDTO dto = new KorisnikDTO();
+                dto.setIme(u.getIme());
+                dto.setPrezime(u.getPrezime());
+                dto.setEmail(u.getEmail());
+                dto.setUsername(u.getUsername());
+                dto.setRoles(u.getRoles());
+                dto.setId(u.getId());
+                return dto;
+            });
+
+            return ResponseEntity.ok(dtoPage);
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body("Greška: " + e.getMessage());
+        }
+    }
 
 
 }

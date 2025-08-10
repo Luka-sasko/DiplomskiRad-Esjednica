@@ -4,18 +4,15 @@
   margin: 40px auto;
   margin-top: 0px;
   padding: 20px;
-  font-family: 'Segoe UI', sans-serif;
+  font-family: "Segoe UI", sans-serif;
 }
-
 
 .tocke-container {
   max-width: 65%;
   margin: 5% auto;
   padding: 20px;
-  font-family: 'Segoe UI', sans-serif;
+  font-family: "Segoe UI", sans-serif;
 }
-
-
 
 .sjednice-container h2 {
   font-size: 28px;
@@ -34,7 +31,7 @@
   flex-wrap: wrap;
 }
 
-.sjednice-controls input,
+.sjednice-controls input:not([type="checkbox"]),
 .sjednice-controls select {
   padding: 10px 14px;
   font-size: 15px;
@@ -57,7 +54,7 @@
   margin-top: 20px;
 }
 
-.tocke-sjednice-wrapper{
+.tocke-sjednice-wrapper {
   margin: 4%;
 }
 
@@ -70,7 +67,7 @@
 }
 
 .sjednica-table button {
-  margin-right: 2%
+  margin-right: 2%;
 }
 
 .sjednica-table th,
@@ -304,4 +301,3 @@
   font-weight: bold;
   margin: 0;
 }
-
