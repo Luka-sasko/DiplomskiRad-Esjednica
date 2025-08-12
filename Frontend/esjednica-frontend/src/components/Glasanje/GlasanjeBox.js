@@ -8,8 +8,10 @@ import RezultatiChart from "./RezultatiChart";
 const GlasanjeBox = observer(({ tockaId }) => {
   const [showModal, setShowModal] = useState(false);
   const user = JSON.parse(localStorage.getItem("user"));
-  const isAdmin = user.roles.includes("ROLE_ADMIN");
-
+  const isAdmin =
+    user?.roles?.includes("ROLE_ADMIN") ||
+    user?.roles?.includes("ROLE_PREDLAGATELJ");
+  const isGledatelj = user?.roles?.includes("ROLE_GLEDATELJ");
   useWebSocket((event) => {
     if (event.tockaId === tockaId) {
       glasanjeStore.ucitajStatus(tockaId);
@@ -71,25 +73,27 @@ const GlasanjeBox = observer(({ tockaId }) => {
           Pokreni glasanje
         </button>
       )}
+      {!isGledatelj && (
+        <>
+          {glasanjeStore.aktivno && preostalo !== null && (
+            <div className="glasanje-timer-box">
+              <p style={{ marginTop: "2%" }} className="glasanje-timer-text">
+                Preostalo vrijeme za glasanje: <strong>{preostalo}s</strong>
+              </p>
+            </div>
+          )}
 
-      {glasanjeStore.aktivno && preostalo !== null && (
-        <div className="glasanje-timer-box">
-          <p style={{ marginTop: "2%" }} className="glasanje-timer-text">
-            Preostalo vrijeme za glasanje: <strong>{preostalo}s</strong>
-          </p>
-        </div>
+          {glasanjeStore.aktivno &&
+            !vrijemeZavrseno() &&
+            (glasanjeStore.jeGlasao ? (
+              <p>Glasanje evidentirano za ovaj račun.</p>
+            ) : (
+              <button className="add-button" onClick={() => setShowModal(true)}>
+                Glasaj
+              </button>
+            ))}
+        </>
       )}
-
-      {glasanjeStore.aktivno &&
-        !vrijemeZavrseno() &&
-        (glasanjeStore.jeGlasao ? (
-          <p>Glasanje evidentirano za ovaj račun.</p>
-        ) : (
-          <button className="add-button" onClick={() => setShowModal(true)}>
-            Glasaj
-          </button>
-        ))}
-
       {glasanjeStore.start &&
         Date.now() >
           new Date(glasanjeStore.start).getTime() +

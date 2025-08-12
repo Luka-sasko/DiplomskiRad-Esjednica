@@ -15,7 +15,9 @@ const SjednicaPage = observer(() => {
   const [currentPage, setCurrentPage] = useState(0);
   const [itemsPerPage, setItemsPerPage] = useState(5);
   const user = JSON.parse(localStorage.getItem("user"));
-  const isAdmin = user?.roles?.includes("ROLE_ADMIN");
+  const isAdmin =
+    user?.roles?.includes("ROLE_ADMIN") ||
+    user?.roles?.includes("ROLE_PREDLAGATELJ");
 
   useEffect(() => {
     sjednicaStore.fetchAll();

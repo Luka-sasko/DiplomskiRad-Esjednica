@@ -17,7 +17,9 @@ const SjednicaDetailPage = observer(() => {
   const [sortKey, setSortKey] = useState("naziv");
   const [sortAsc, setSortAsc] = useState(true);
   const user = JSON.parse(localStorage.getItem("user"));
-  const isAdmin = user?.roles?.includes("ROLE_ADMIN");
+  const isAdmin =
+    user?.roles?.includes("ROLE_ADMIN") ||
+    user?.roles?.includes("ROLE_PREDLAGATELJ");
 
   useEffect(() => {
     const fetchData = async () => {

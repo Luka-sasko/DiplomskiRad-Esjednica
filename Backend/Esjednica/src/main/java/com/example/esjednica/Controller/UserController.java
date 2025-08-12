@@ -76,7 +76,7 @@ public class UserController {
     }
 
     @GetMapping(value = "/profile")
-    @PreAuthorize("hasRole('ADMIN') or hasRole('PREDLAGATELJ') or hasRole('KORISNIK')")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('PREDLAGATELJ') or hasRole('KORISNIK') or hasRole('GLEDATELJ')")
     public ResponseEntity<?> GetUserProfile(@RequestHeader("Authorization") String authHeader)
     {
         try {
@@ -188,7 +188,7 @@ public class UserController {
     }
 
     @PutMapping("/{userId}/roles")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('PREDLAGATELJ')")
     public ResponseEntity<?> updateUserRoles(
             @RequestHeader("Authorization") String authHeader,
             @PathVariable Long userId,

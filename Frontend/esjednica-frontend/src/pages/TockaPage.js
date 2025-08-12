@@ -13,7 +13,9 @@ const TockaPage = observer(() => {
   const [tocka, setTocka] = useState(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const user = JSON.parse(localStorage.getItem("user"));
-  const isAdmin = user?.roles?.includes("ROLE_ADMIN");
+  const isAdmin =
+    user?.roles?.includes("ROLE_ADMIN") ||
+    user?.roles?.includes("ROLE_PREDLAGATELJ");
 
   useEffect(() => {
     const fetch = async () => {
@@ -87,9 +89,7 @@ const TockaPage = observer(() => {
         <p>
           <strong>Opis:</strong> {tocka.opis}
         </p>
-
         <GlasanjeBox tockaId={tockaStore.tocka.id} />
-
         <PrilogTable tockaId={tockaStore.tocka.id} />
       </div>
     </div>

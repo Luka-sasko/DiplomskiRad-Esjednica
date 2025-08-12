@@ -27,7 +27,9 @@ const SjednicaTable = ({
   };
 
   const user = JSON.parse(localStorage.getItem("user"));
-  const isAdmin = user?.roles?.includes("ROLE_ADMIN");
+  const isAdmin =
+    user?.roles?.includes("ROLE_ADMIN") ||
+    user?.roles?.includes("ROLE_PREDLAGATELJ");
 
   return (
     <div className="sjednica-table-wrapper">
